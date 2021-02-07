@@ -196,7 +196,7 @@ We will create three preseed types
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
-17. Set the TEST MACHINE BIOS to boot-select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB over and over, resinstalling the OS. You certianly don't want this.
+17. Set the TEST MACHINE BIOS to boot-select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB reinstalling the OS over and over again. You certianly don't want this.
 
 18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right?  
 
