@@ -37,6 +37,7 @@ All of this requires an unattended installation of a minimal setup of Linux, whe
 - MAC support which requires a isohdpfx.bin binary with no MD5 checksum verification. 
 - Docker 
 - Build disk images 
+- The long name "linux-unattended-installation" changed to "lui" for shorter command line instructions.
 
 ## Ubuntu 20.04 LTS
 
@@ -64,7 +65,7 @@ We will create three preseed types
 #### Linux - "ubuntu 20.04 server"
 
 1. You MUST run an ubuntu 20.04 server to run our version of the `build-iso.sh` script which makes your USB keys. An old laptop running ubuntu 20.04 is a great choice.  
-  > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassel of MD5 checkum authetnication and we wanted a dedicated, secure server doing this work, so this branch requires an ubuntu 20.04 server to build ISOs.
+    > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassel of MD5 checkum verification, plus we wanted a dedicated, secure server doing this work anyhow.
 
 2. Install the following software on your "ubuntu 20.04 server".   
 
@@ -76,22 +77,29 @@ We will create three preseed types
 
 4. Change branch to this branch
 
-``
+`git checkout cloud-bootstrap`
 
 5. Your installation will look like this:
+
     ```
-    .
     ├── docker-entrypoint.sh
     ├── LICENSE
-    ├── readme.md
+    ├── readme.md  <--- The file you are reading right now.
     └── ubuntu
         └── 20.04
-            ├── build-disk.sh
             ├── build-iso.sh
-            └── custom
+            └── router
                 ├── boot-menu.patch
                 ├── preseed.cfg
                 └── ssh-host-keygen.service
+            └── beachhead
+                ├── boot-menu.patch
+                ├── preseed.cfg
+                └── ssh-host-keygen.service
+            └── compute
+                ├── boot-menu.patch
+                ├── preseed.cfg
+                └── ssh-host-keygen.service                
     ```
 
 #### Build ISO images
