@@ -166,7 +166,7 @@ We will create three preseed types
     └─sda3                      8:3    0 697.1G  0 part
       └─ubuntu--vg-ubuntu--lv 253:0    0   200G  0 lvm  /
     sdb                         8:32   1  29.9G  0 disk 
-    └─sdb1                      8:33   1  29.9G  0 part  <------------ IN my case, DEVICE-NAME = /dev/sdc1 
+    └─sdb1                      8:33   1  29.9G  0 part  <------------ IN my case, DEVICE-NAME = /dev/sdb1 (yours may be different) 
     ```
     
 13. Remove write protection from the USB drive. In my case this would be MY COMMAND, yours will depend on the **DEVICE-NAME** assignment
