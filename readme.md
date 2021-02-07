@@ -214,7 +214,35 @@ We will create three preseed types
 
 
 
+-----
+## The hardest working line of code explained:
+This repo uses xorriso (pronounced "chorizo")
+Read this: https://www.gnu.org/software/xorriso/
 
+In the script, you will see this line: `"$BIN_XORRISO" -as mkisofs -r -V "ubuntu_1804_netboot_unattended" -J -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -input-charset utf-8 -isohybrid-mbr "$SCRIPT_DIR/custom/isohdpfx.bin" -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -o "$TARGET_ISO" ./`
+
+Understanding this line involves reading this:  https://wiki.osdev.org/Mkisofs
+Each parameter is explained in the above URL, but I will break them out here as I want a clear reference before I start making changes.
+
+| Flagr | Argument  | Description |
+| :--- | :--- | :--- |
+|"$BIN_XORRISO" | |
+|-as |mkisofs| mkisofs = Macintosh ISO File System|
+|-r |  |  Create a normal linux filename with access permissions to make all files readable by everybody. |
+|-V |"ubuntu_1804_netboot_unattended"| ISO 9660 Volume ID  Hmmm, why is this not "ubuntu_2004" ???|
+|-J | | enables MS-Windows UCS-2 names via Joliet extension|
+|-b | isolinux.bin |El Torito boot image for PC-BIOS|
+|-c | boot.cat | El Torito Boot Catalog|
+|-no-emul-boot| | Choose emulation NOT floppy emulation, rather ISOLINUX and GRUB2 |
+|-boot-load-size| 4 | How many blocks of the boot image are to be loaded by the BIOS |
+|-boot-info-table |  | Needed for boot images of ISOLINUX and GRUB2.|
+|-input-charset|  utf-8 | Input charset that defines the characters used in local file names |
+|-isohybrid-mbr | "$SCRIPT_DIR/custom/isohdpfx.bin" | SYSLINUX/ISOLINUX MBR template for El Torito boot image for BIOS |     
+|-eltorito-alt-boot |   |  El Torito boot options will apply to the next boot image given by -b or -e|
+|-e boot/grub/efi.img |  | El Torito boot image for EFI |
+|-no-emul-boot  |  | Again??|
+|-isohybrid-gpt-basdat | | boot image is GPT partition with EFI Master Boot Record|
+|-o |"$TARGET_ISO" ./|  sets the ISO file name|
 
 
 
