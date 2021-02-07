@@ -196,15 +196,20 @@ We will create three preseed types
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
-17. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right? The setup tries to eject the ISO/CD during its final stage. 
+17. Set the TEST MACHINE BIOS to select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB, not the hard drive.
 
-18. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). 
+18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right? The setup tries to eject the ISO/CD during its final stage. 
 
-19. When the machine boots, it will display the IPV4 and IPV6 addresse on the console.
+19. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). 
 
-20. SSH into your new machine as ubuntu@IPV4 address
+20. When the machine boots, it will display the IPV4 and IPV6 addresse on the console.
 
-21. FYI: The ssh host key of your new machine will be generated on first boot.
+21. SSH into your new machine as ubuntu@IPV4 address
+
+22. FYI: The ssh host key of your new machine will be generated on first boot.
+
+23. A neat trick is the dd the master boot record of the test machine SSD, then reboot the test machine. Since you clobbered the SSD of the test machine, the USB key will be selected as secondary and re-install. This time you can time how long it takes from reboot.
+
 
 
 
