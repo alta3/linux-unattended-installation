@@ -143,7 +143,7 @@ We will create three preseed types
 
     `./ubuntu/20.04/build-iso.sh  ~/.ssh/.ssh/id_rsa.pub ~/my-first-iso.iso`  
     
-11. Now do the same thing, this time like this:
+    >It is not recommended, but you can do the same thing with no paramters, like this:
 
     `./ubuntu/20.04/build-iso.sh`
     
