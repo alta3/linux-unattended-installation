@@ -165,20 +165,14 @@ We will create three preseed types
     ├─sda2                      8:2    0     1G  0 part /boot
     └─sda3                      8:3    0 697.1G  0 part
       └─ubuntu--vg-ubuntu--lv 253:0    0   200G  0 lvm  /
-    sdc                         8:32   1  29.9G  0 disk 
-    └─sdc1                      8:33   1  29.9G  0 part  <------------ OK, DEVICE-NAME = /dev/sdc1 in my case.  
+    sdb                         8:32   1  29.9G  0 disk 
+    └─sdb1                      8:33   1  29.9G  0 part  <------------ IN my case, DEVICE-NAME = /dev/sdc1 
     ```
     
-13. Remove write protection from the USB drive. In my case this wuld be MY COMMAND, yours will depend on the dev assignment
+13. Remove write protection from the USB drive. In my case this would be MY COMMAND, yours will depend on the dev assignment
 
     If /dev/sdb1, then:
-    `sudo hdparm -r0 /dev/sdb1`   <-- Most likely what you will see
-
-    If /dev/sdc1, then:
-    `sudo hdparm -r0 /dev/sdc1`   <-- This example
-    
-    If /dev/SomethingElse, then:
-    `sudo hdparm -r0 /dev/SomethingElse`  <--- Nevertheless, make sure to use your `/dev/<USB-DEV>`
+    `sudo hdparm -r0 /dev/sdb1`   <-- This is an EXAMPLE, use YOUR DEVICE-NAME, not this!!!
     
 14. Use dd to write the iso to the USB. Make sure to substitute `<DEV-NAME>` with your USB device's name
 
