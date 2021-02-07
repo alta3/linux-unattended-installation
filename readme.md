@@ -69,85 +69,150 @@ We will create three preseed types
 
 2. Install the following software on your "ubuntu 20.04 server".   
 
-`sudo apt-get install dos2unix p7zip-full cpio gzip genisoimage whois pwgen wget fakeroot isolinux xorriso` to install software tools required by the `build-iso.sh` script.
+    `sudo apt-get install dos2unix p7zip-full cpio gzip genisoimage whois pwgen wget fakeroot isolinux xorriso` to install software tools required by the `build-iso.sh` script.
 
 3. Clone the repository.
 
-`git clone https://github.com/alta3/lui.git`
+    `git clone https://github.com/alta3/lui.git`
 
 4. Change branch to this branch
 
-`git checkout cloud-bootstrap`
+    `git checkout cloud-bootstrap`
 
-5. Your installation will look like this:
+5. CD into this repo
+
+    `cd lui`
+
+6. The `tree` command will show you this:
 
     ```
-    ├── docker-entrypoint.sh
     ├── LICENSE
-    ├── readme.md  <--- The file you are reading right now.
+    ├── readme.md
     └── ubuntu
-        └── 20.04
+        ├── 20.04
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
+        ├── 20.04-beachhead
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
+        ├── 20.04-compute
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
+        └── 20.04-router
             ├── build-iso.sh
-            └── router
+            └── custom
                 ├── boot-menu.patch
+                ├── custom
                 ├── preseed.cfg
-                └── ssh-host-keygen.service
-            └── beachhead
-                ├── boot-menu.patch
-                ├── preseed.cfg
-                └── ssh-host-keygen.service
-            └── compute
-                ├── boot-menu.patch
-                ├── preseed.cfg
-                └── ssh-host-keygen.service                
+                └── ssh-host-keygen.service               
+        ```
+7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead as approprate. All j2 files require ansible to process them before you can use them. 
+
+
+8. Do you have an RSA key generated?
+
+    `cat ~/.ssh/id_rsa.pub`
+
+    > YES
+    ```
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6BH/vKGN0S7VBIMUw9Zqw4aRLl6g8Sb8ByKQFbH+xe6xmzoynspFHXRBz4wFgjbfLco+z6KOlL0vgzqr2/biUKqEjQ9YaZI/+B9R6PbCjbSEspdT9NV4hpygojnoEEsOevFbHW5/crMD09UHYRO2x5JUC6nuP+42Ca1GLANDE0d1MmqOvYd4aLvqZpVpmjK+GPEqzjyoyoiaWoYupCgXzPpkcoQBlXE4c6v1Kxh6aumQhB5oWqNpjRUwsAKKqSjqGSb+A6sftE6Uy2K/+vyufCY5JLysFFebBrnr0Mqd5485G7zLIQekai84FZ/7c9q5lTmXAmPpFzdjaozIZn5f4ZwW/JSsALLSRe2Ts4rZTaLlJr3RiQzuwEvzcePB6ve43aPswlVIfAY3jeXN6Eoa49SdvLVBZLNH+owK6wQdlcTFVeLalBmzRTArfY4XQzBEMhfuMOtppN2+J+WtI8K/rQxfVJyqrGaRLCC
+    ```
+    
+    > NO
+    ```
+    No such file or directory`
     ```
 
-#### Build ISO images
+9. If no, create one as follows:
 
-3. Run the `build-iso.sh` script as regular user. No root permissions are required. In this example, 
+    `ssh-keygen` and accept the defaults.
 
-```sh
-./ubuntu/<VERSION>/build-iso.sh <ssh-public-key-file> <target-iso-file>
-```
+10. Just for fun, run the `build-iso.sh` to create the most basic bootstrap usb. This one will work with no modication so that you can see how the software works.   
 
-All parameters are optional.
+    `./ubuntu/20.04/build-iso.sh  ~/.ssh/.ssh/id_rsa.pub ~/my-first-iso.iso`  
+    
+11. Now do the same thing, this time like this:
 
-| Parameter | Description | Default Value |
-| :--- | :--- | :--- |
-| `<ssh-public-key-file>` | The ssh public key to be placed in authorized_keys | `$HOME/.ssh/id_rsa.pub` |
-| `<target-iso-file>` | The path of the ISO image created by this script | `ubuntu-<VERSION>-netboot-amd64-unattended.iso` |
+    `./ubuntu/20.04/build-iso.sh`
+    
+    > The software uses ~/.ssh/.ssh/id_rsa.pub by default and your iso will be called `ubuntu-20.04-netboot-amd64-unattended.iso`  You can see that all parameters are optional.
 
-Boot the created ISO image on the target VM or physical machine. Be aware the setup will start within 10 seconds automatically and will reset the disk of the target device completely. The setup tries to eject the ISO/CD during its final stage. It usually works on physical machines, and it works on VirtualBox. It might not function in certain KVM environments in case the managing environment is not aware of the *eject event*. In that case, you have to detach the ISO image manually to prevent an unintended reinstall.
+    | Parameter | Description | Default Value |
+    | :--- | :--- | :--- |
+    | `<ssh-public-key-file>` | The ssh public key to be placed in authorized_keys | `$HOME/.ssh/id_rsa.pub` |
+    | `<target-iso-file>` | The path of the ISO image created by this script | `ubuntu-<VERSION>-netboot-amd64-unattended.iso` |
 
-Power-on the machine and log into it as root using your ssh key. The ssh host key will be generated on first boot.
+12. Now that you have an iso file, it is time to burn it on a USB key. Use `lsblk` to verify which **DEVICE NAME** your USB key is using. Most likely it will be`/dev/sdb1`, but in my case it was:
+
+    ```
+    lsblk
+    
+    NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+    sda                         8:0    0 698.7G  0 disk
+    ├─sda1                      8:1    0   512M  0 part /boot/efi
+    ├─sda2                      8:2    0     1G  0 part /boot
+    └─sda3                      8:3    0 697.1G  0 part
+      └─ubuntu--vg-ubuntu--lv 253:0    0   200G  0 lvm  /
+    sdc                         8:32   1  29.9G  0 disk 
+    └─sdc1                      8:33   1  29.9G  0 part  <------------ OK, DEVICE-NAME = /dev/sdc1 in my case.  
+    ```
+    
+13. Remove write protection from the USB drive. In my case this wuld be MY COMMAND, yours will depend on the dev assignment
+
+    If /dev/sdb1, then:
+    `sudo hdparm -r0 /dev/sdb1`   <-- Most likely what you will see
+
+    If /dev/sdc1, then:
+    `sudo hdparm -r0 /dev/sdc1`   <-- This example
+    
+    If /dev/SomethingElse, then:
+    `sudo hdparm -r0 /dev/SomethingElse`  <--- Nevertheless, make sure to use your `/dev/<USB-DEV>`
+    
+14. Use dd to write the iso to the USB. Make sure to substitute `<DEV-NAME>` with your USB device's name
+
+    `sudo dd bs=4M if=/home/ubuntu/router-v1.iso of=/dev/<DEV-NAME> conv=fdatasync status=progress`
+    
+15. Verification steps (for rocket scientists only)
+
+    >Your USB key has a single FAT32 PARTITION which is most likley `/dev/sdb1` so I will use that as an example. You should mount your new ISO and see what just happened as follows:  
+    `sudo mkdir /usb`  
+    `mkdir -p  ~/iso-stuff`  
+    `sudo mount `/dev/sdb1 /usb`  (ignore the read-only warning, we know this)  
+    `cd /usb`  
+    `sudo cp initrd.gz ~/iso-stuff`  
+    `cd ~/iso-stuff/`  
+    `gunzip initrd.gz` (Unzip the gzip file)`  
+    `ls` and notice that this is only a single file! `initrd` Turns out that this file is a CPIO archivie file (yeah, NOT tar)  
+    `cpio -i < initrd`  - This will unarchive the CPIO archive.  
+    `ll` will reveal a posix file system!  
+    No look around, this is the filesystem that will boot in ramdisk, allowing the installation on the actual system harddrives. It should all make sense now, (at least it did for me.)
+
+16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
+
+17. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right? The setup tries to eject the ISO/CD during its final stage. 
+
+18. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). 
+
+19. When the machine boots, it will display the IPV4 and IPV6 addresse on the console.
+
+20. SSH into your new machine as ubuntu@IPV4 address
+
+21. FYI: The ssh host key of your new machine will be generated on first boot.
 
 
 
-## Notes on debian preseed
-Before you start building, consider a little practice to see what is going on, lets make a few assumptions:
 
-Your USB key has a single FAT32 PARTITION and appears as: 
-`/dev/sdb1`  
-
-You remove USB WRITE PROTECTION as follows  
-`sudo hdparm -r0 /dev/sdb1`  
-
-You will create the router ISO like this:  
-`./ubuntu/20.04/build-iso.sh /home/ubuntu/.ssh/id_rsa.pub  /home/ubuntu/router.iso`  
-
-You will create the USB key using DD like this:  
-`sudo dd bs=4M if=/home/ubuntu/router-v1.iso of=/dev/sdb1 conv=fdatasync status=progress`
-
-Check your work, so mount the USB key  
-`mkdir /usb`
-`mkdir ~/router`
-`mount /dev/sdb1 /usb`  
-`cd /usb`
-`cp initrd.gz ~/router`
-`cd ~/router`
-`gunzip initd.gz`
-`cpio -i < initd`
-Check the contents of the custom directory
-Make sure the preseed file matches what you created the iso with in the first place from `./ubuntu/20.04/build-iso.sh /home/ubuntu/.ssh/id_rsa.pub  /home/ubuntu/router.iso`
 
 
