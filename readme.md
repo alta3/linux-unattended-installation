@@ -5,7 +5,7 @@ This branch of coreprocess/linux-unattended-installation addresses a specific re
  ![Bootstrapping a cloud](https://static.alta3.com/images/cloud-bootstrap.png)
 
 ## Rebuilding the cloud from bare metal
-The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that NOTHING is in place.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a soluition that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
+The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that NOTHING is in place except Ethernet connectivity.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a soluition that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
 1. bring up a router, dns, dhcp entirely from preseed
 2. bring up a beachhead server to cloud ansible playbooks and start building entirely from preseed.
 3. bring up the compute nodes
