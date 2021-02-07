@@ -34,7 +34,7 @@ All of this requires an unattended installation of a minimal setup of Linux, whe
 ## Scrapped in this branch:
 - Ubuntu 16.04 LTS
 - Ubuntu 18.04 LTS
-- MAC support with an unverified binary file
+- MAC support which requires a isohdpfx.bin binary with no MD5 checksum verification. 
 - Docker 
 - Build disk images 
 
@@ -63,7 +63,8 @@ We will create three preseed types
 
 #### Linux - "ubuntu 20.04 server"
 
-1. You will need an ubuntu 20.04 server to run the `build-iso.sh` script which makes your USB keys. An old laptop running ubuntu 20.04 is a great choice.
+1. You MUST run an ubuntu 20.04 server to run our version of the `build-iso.sh` script which makes your USB keys. An old laptop running ubuntu 20.04 is a great choice.  
+  > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassel of MD5 checkum authetnication and we wanted a dedicated, secure server doing this work, so this branch requires an ubuntu 20.04 server to build ISOs.
 
 2. Install the following software on your "ubuntu 20.04 server".   
 
@@ -71,11 +72,27 @@ We will create three preseed types
 
 3. Clone the repository.
 
-`-`
+`git clone https://github.com/alta3/lui.git`
 
 4. Change branch to this branch
 
-`-`
+``
+
+5. Your installation will look like this:
+    ```
+    .
+    ├── docker-entrypoint.sh
+    ├── LICENSE
+    ├── readme.md
+    └── ubuntu
+        └── 20.04
+            ├── build-disk.sh
+            ├── build-iso.sh
+            └── custom
+                ├── boot-menu.patch
+                ├── preseed.cfg
+                └── ssh-host-keygen.service
+    ```
 
 #### Build ISO images
 
