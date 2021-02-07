@@ -200,7 +200,7 @@ We will create three preseed types
 
 18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right?  
 
-19. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). When complete, setup ejects the ISO/CD.
+19. Your machine will complete the installtion in about 12 minutes (with 1 Gbps internet access and SSD drive in the test machine). When complete, setup ejects the ISO/CD.
 
 20. When the machine boots, it will display the IPV4 and IPV6 addresses on the console.
 
@@ -208,7 +208,7 @@ We will create three preseed types
 
 22. FYI: The ssh host key of your new machine will be generated on first boot.
 
-23. A neat trick is the dd the master boot record of the test machine SSD, then reboot the test machine. Since you clobbered the SSD of the test machine, the USB key will be selected as secondary and re-install. This time you can time how long it takes from reboot.
+23. A neat trick is the dd the master boot record of the test machine SSD, then reboot the test machine. Since you clobbered the SSD of the test machine, the USB key will be selected as secondary and re-install. This time you can time how long it takes from reboot to OS reinstalled.
 
 "Danke für ein tolles Repo" coreprocess!  (Ein Amerikaner bekommt nie die Chance, mit Deutsch zu üben) 
 
