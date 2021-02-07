@@ -1,4 +1,4 @@
-# Linux Unattended Installation
+# Linux Unattended Installation (LUI)
 
 This fork of coreprocess/linux-unattended-installation is built to address a specific requirement when cloud building from scratch. When there is only unconfigured bare metal, there is no router, no beachhead, nothing, nada!  Fortunately, coreprocess provided the essentials to solve this problem by adding config files and additional boot content:  
 
@@ -62,43 +62,9 @@ Run `sudo apt-get install dos2unix p7zip-full cpio gzip genisoimage whois pwgen 
 Run `sudo apt-get install qemu-utils qemu-kvm` in addition to install software tools required by the `build-disk.sh` script.
 
 
-#### Docker
+#### Docker - Removed from this branch
 
-Run `docker build -t ubuntu-unattended .` to build the Docker image.
-
-When running the Docker container, add the public key you want to use and the ISO output directory as volume links and specify the desired Ubuntu version as parameter (defaults to 18.04), e.g:
-
-```sh
-docker run \
-  --rm \
-  -t \
-  -v "$HOME/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub:ro" \
-  -v "$(pwd):/iso" \
-  ubuntu-unattended \
-  16.04
-```
-
-Explanation of the command switches:
-```sh
---rm
-# Remove the Docker container when finished
-
--t
-# Show terminal output
-
--v "$HOME/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub:ro"
-# Mount "$HOME/.ssh/id_rsa.pub" from your machine to "/root/.ssh/id_rsa.pub"
-# in the container (read only).
-# This is the path, where the script expects your public key to be.
-
--v "$(pwd):/iso"
-# Mount the current working directory from your machine to "/iso"
-# in the container. This is the path, where the ISO file is written to.
-```
-
-It is enough to build the container once. If you want to add a custom preseed config when executing `docker run`, mount your local copy of the file into the container, e.g: `-v "$(pwd)/my_preseed.cfg:/ubuntu/<version>/custom/preseed.cfg`.
-
-The script `build-disk.sh` is not supported on Docker.
+#### Build disk images - Removed from this branch.
 
 ### Usage
 
@@ -121,25 +87,7 @@ Boot the created ISO image on the target VM or physical machine. Be aware the se
 
 Power-on the machine and log into it as root using your ssh key. The ssh host key will be generated on first boot.
 
-#### Build disk images
 
-You can run the `build-disk.sh` script as regular user. No root permissions required, if you are able to run `kvm` with your user account.
-
-```sh
-./ubuntu/<VERSION>/build-disk.sh <ram-size> <disk-size> <disk-format> <ssh-public-key-file> <disk-file>
-```
-
-All parameters are optional.
-
-| Parameter | Description | Default Value |
-| :--- | :--- | :--- |
-| `<ram-size>` | The RAM size used during setup routine in MB (might affect size of swap partition) | `2048` |
-| `<disk-size>` | The disk size of the disk image file to be created | `10G` |
-| `<disk-format>` | The format of the disk image file to be created (qcow2 or raw) | `qcow2` |
-| `<ssh-public-key-file>` | The ssh public key to be placed in authorized_keys | `$HOME/.ssh/id_rsa.pub` |
-| `<disk-file>` | The path of the disk image created by this script | `ubuntu-<VERSION>-amd64-<ram-size>-<disk-size>.<disk-format>` |
-
-Use the generated disk image as template image and create copies of it to deploy virtual or physical machines. Do not boot the template itself, since the ssh host key will be generated on first boot.
 
 ## Notes on debian preseed
 Before you start building, consider a little practice to see what is going on, lets make a few assumptions:
