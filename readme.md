@@ -1,6 +1,7 @@
 # Linux Unattended Installation
 
-This fork of coreprocess/linux-unattended-installation is built to address a specific requirement when cloud building from scratch. When there is only unconfigured bare metal, there is no router, no beachhead, nothing, nada!  Fortunately, coreprocess provided the essentials to solve this problem by adding config files and additional boot content:
+This fork of coreprocess/linux-unattended-installation is built to address a specific requirement when cloud building from scratch. When there is only unconfigured bare metal, there is no router, no beachhead, nothing, nada!  Fortunately, coreprocess provided the essentials to solve this problem by adding config files and additional boot content:  
+
  ![Bootstrapping a cloud](https://static.alta3.com/images/cloud-bootstrap.png)
 
 ## Rebuilding a cloud for sport
