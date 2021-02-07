@@ -65,7 +65,7 @@ We will create three preseed types
 #### Linux - "ubuntu 20.04 server"
 
 1. You MUST run an ubuntu 20.04 server to run our version of the `build-iso.sh` script which makes your USB keys. An old laptop running ubuntu 20.04 is a great choice.  
-    > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassel of MD5 checkum verification, plus we wanted a dedicated, secure server doing this work anyhow.
+    > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassle of MD5 checkum verification, plus we wanted a dedicated, secure server doing this work anyhow.
 
 2. Install the following software on your "ubuntu 20.04 server".   
 
@@ -75,15 +75,15 @@ We will create three preseed types
 
     `git clone https://github.com/alta3/lui.git`
 
-4. Change branch to this branch
-
-    `git checkout cloud-bootstrap`
-
-5. CD into this repo
+4. CD into this repo
 
     `cd lui`
 
-6. The `tree` command will show you this:
+5. Change branch to this branch
+
+    `git checkout cloud-bootstrap`
+
+6. The `tree` command will show you something like this:
 
     ```
     ├── LICENSE
@@ -118,8 +118,8 @@ We will create three preseed types
                 ├── preseed.cfg
                 └── ssh-host-keygen.service               
         ```
-7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead as approprate. All j2 files require ansible to process them before you can use them. 
 
+7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as approprate. All j2 files require ansible to process them before you can use them. 
 
 8. Do you have an RSA key generated?
 
