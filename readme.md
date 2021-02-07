@@ -224,7 +224,7 @@ In the script, you will see this line: `"$BIN_XORRISO" -as mkisofs -r -V "ubuntu
 Understanding this line involves reading this:  https://wiki.osdev.org/Mkisofs
 Each parameter is explained in the above URL, but I will break them out here as I want a clear reference before I start making changes.
 
-| Flagr | Argument  | Description |
+| Flag | Argument  | Description |
 | :--- | :--- | :--- |
 |"$BIN_XORRISO" | |
 |-as |mkisofs| mkisofs = Macintosh ISO File System|
