@@ -183,15 +183,15 @@ We will create three preseed types
     >Your USB key has a single FAT32 PARTITION which is most likley `/dev/sdb1` so I will use that as an example. You should mount your new ISO and see what just happened as follows:  
     `sudo mkdir /usb`  
     `mkdir -p  ~/iso-stuff`  
-    `sudo mount `/dev/sdb1 /usb`  (ignore the read-only warning, we know this)  
+    `sudo mount /dev/sdb1 /usb`  *ignore the read-only warning*  
     `cd /usb`  
     `sudo cp initrd.gz ~/iso-stuff`  
     `cd ~/iso-stuff/`  
-    `gunzip initrd.gz` (Unzip the gzip file)`  
-    `ls` and notice that this is only a single file! `initrd` Turns out that this file is a CPIO archivie file (yeah, NOT tar)  
-    `cpio -i < initrd`  - This will unarchive the CPIO archive.  
+    `gunzip initrd.gz` (Unzip the gzip file)  
+    `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archivie file (NOT tar)  
+    `cpio -i < initrd` - This will unarchive the initrd file.  
     `ll` will reveal a posix file system!  
-    No look around, this is the filesystem that will boot in ramdisk, allowing the installation on the actual system harddrives. It should all make sense now, (at least it did for me.)
+    No look around, this is the filesystem that will boot in ramdisk, allowing the installation on the actual system harddrives. It should all make sense now, (at least it did for me.)  
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
