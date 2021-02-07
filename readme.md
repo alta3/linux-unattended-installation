@@ -62,12 +62,12 @@ We will create three preseed types
 
 ### Install Dependancies
 
-#### Linux - "ubuntu 20.04 server"
+#### Ubuntu 20.04 ISO builder"
 
-1. You MUST run an ubuntu 20.04 server to run our version of the `build-iso.sh` script which makes your USB keys. An old laptop running ubuntu 20.04 is a great choice.  
-    > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassle of MD5 checkum verification, plus we wanted a dedicated, secure server doing this work anyhow.
+1. You MUST run an ubuntu 20.04 server to run our version of the `build-iso.sh` script which in turn makes your USB keys. An old laptop running ubuntu 20.04 is a great choice as your "ISO MAKER".  
+    > We are using a 20.04 system to obtain `isohdpfx.bin` from `/usr/lib/ISOLINUX/isohdpfx.bin` because it was easier than going though the hassle of MD5 checkum verification, plus we wanted a simple, dedicated, secure server doing this work anyhow.
 
-2. Install the following software on your "ubuntu 20.04 server".   
+2. Install the following software on your "Ubuntu 20.04 ISO builder server".   
 
     `sudo apt-get install dos2unix p7zip-full cpio gzip genisoimage whois pwgen wget fakeroot isolinux xorriso` to install software tools required by the `build-iso.sh` script.
 
@@ -121,21 +121,21 @@ We will create three preseed types
 
 7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as approprate. All j2 files require ansible to process them before you can use them. 
 
-8. Do you have an RSA key generated?
+8. Do you have an RSA key generated? YES or NO???
 
     `cat ~/.ssh/id_rsa.pub`
 
-    > YES
+    > YES (GOOD)
     ```
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6BH/vKGN0S7VBIMUw9Zqw4aRLl6g8Sb8ByKQFbH+xe6xmzoynspFHXRBz4wFgjbfLco+z6KOlL0vgzqr2/biUKqEjQ9YaZI/+B9R6PbCjbSEspdT9NV4hpygojnoEEsOevFbHW5/crMD09UHYRO2x5JUC6nuP+42Ca1GLANDE0d1MmqOvYd4aLvqZpVpmjK+GPEqzjyoyoiaWoYupCgXzPpkcoQBlXE4c6v1Kxh6aumQhB5oWqNpjRUwsAKKqSjqGSb+A6sftE6Uy2K/+vyufCY5JLysFFebBrnr0Mqd5485G7zLIQekai84FZ/7c9q5lTmXAmPpFzdjaozIZn5f4ZwW/JSsALLSRe2Ts4rZTaLlJr3RiQzuwEvzcePB6ve43aPswlVIfAY3jeXN6Eoa49SdvLVBZLNH+owK6wQdlcTFVeLalBmzRTArfY4XQzBEMhfuMOtppN2+J+WtI8K/rQxfVJyqrGaRLCC
+        ssh-rsa AAAAB3NzaC1yc2EAAAAD - blah - blah - blah JyqrGaRLCC
     ```
     
-    > NO
+    > NO (WORK NEEDED)
     ```
     No such file or directory`
     ```
 
-9. If no, create one as follows:
+9. If no, then create one as follows:
 
     `ssh-keygen` and accept the defaults.
 
@@ -169,18 +169,18 @@ We will create three preseed types
     └─sdb1                      8:33   1  29.9G  0 part  <------------ IN my case, DEVICE-NAME = /dev/sdc1 
     ```
     
-13. Remove write protection from the USB drive. In my case this would be MY COMMAND, yours will depend on the dev assignment
+13. Remove write protection from the USB drive. In my case this would be MY COMMAND, yours will depend on the **DEVICE-NAME** assignment
 
     If /dev/sdb1, then:
     `sudo hdparm -r0 /dev/sdb1`   <-- This is an EXAMPLE, use YOUR DEVICE-NAME, not this!!!
     
-14. Use dd to write the iso to the USB. Make sure to substitute `<DEV-NAME>` with your USB device's name
+14. Use dd to write your iso to the USB. Make sure to substitute `<DEVICE-NAME>` with your USB device's name
 
-    `sudo dd bs=4M if=/home/ubuntu/router-v1.iso of=/dev/<DEV-NAME> conv=fdatasync status=progress`
+    `sudo dd bs=4M if=/home/ubuntu/router-v1.iso of=/dev/DEVICE-NAME> conv=fdatasync status=progress`
     
 15. Verification steps (for rocket scientists only)
 
-    >Your USB key has a single FAT32 PARTITION which is most likley `/dev/sdb1` so I will use that as an example. You should mount your new ISO and see what just happened as follows:  
+    >Your USB key has a single FAT32 PARTITION which is most likley `/dev/sdb1` so I will use that as an example. You should mount your new ISO and verify what just happened as follows:  
     `sudo mkdir /usb`  
     `mkdir -p  ~/iso-stuff`  
     `sudo mount /dev/sdb1 /usb`  *ignore the read-only warning*  
@@ -188,7 +188,7 @@ We will create three preseed types
     `sudo cp initrd.gz ~/iso-stuff`  
     `cd ~/iso-stuff/`  
     `gunzip initrd.gz` (Unzip the gzip file)  
-    `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archivie file (NOT tar)  
+    `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archivie file (linux kernel can boot from CPIO archive, not tar, hence, CPIO archive is used)  
     `cpio -i < initrd` - This will unarchive the initrd file.  
     `ll` will reveal a posix file system!  
     Now look around. This is the filesystem that will boot in ramdisk, permitting unfettered access to the harddrives. Hopefully it should all make sense now, (at least it did for me.)  
@@ -196,19 +196,21 @@ We will create three preseed types
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
-17. Set the TEST MACHINE BIOS to select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB, not the hard drive.
+17. Set the TEST MACHINE BIOS to boot-select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB over and over, resinstalling the OS. You certianly don't want this.
 
-18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right? The setup tries to eject the ISO/CD during its final stage. 
+18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right?  
 
-19. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). 
+19. Your machine will complete the installtion in about 12 minutes (wtih 1 Gbps internet access and SSD drive in the test machine). When complete, setup ejects the ISO/CD.
 
-20. When the machine boots, it will display the IPV4 and IPV6 addresse on the console.
+20. When the machine boots, it will display the IPV4 and IPV6 addresses on the console.
 
 21. SSH into your new machine as ubuntu@IPV4 address
 
 22. FYI: The ssh host key of your new machine will be generated on first boot.
 
 23. A neat trick is the dd the master boot record of the test machine SSD, then reboot the test machine. Since you clobbered the SSD of the test machine, the USB key will be selected as secondary and re-install. This time you can time how long it takes from reboot.
+
+"Danke für ein tolles Repo" coreprocess!  (Ein Amerikaner bekommt nie die Chance, mit Deutsch zu üben) 
 
 
 
