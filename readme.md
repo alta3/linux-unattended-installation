@@ -191,7 +191,8 @@ We will create three preseed types
     `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archivie file (NOT tar)  
     `cpio -i < initrd` - This will unarchive the initrd file.  
     `ll` will reveal a posix file system!  
-    No look around, this is the filesystem that will boot in ramdisk, allowing the installation on the actual system harddrives. It should all make sense now, (at least it did for me.)  
+    Now look around. This is the filesystem that will boot in ramdisk, permitting unfettered access to the harddrives. Hopefully it should all make sense now, (at least it did for me.)  
+    `umount /dev/sdb1`  and continue!  
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
