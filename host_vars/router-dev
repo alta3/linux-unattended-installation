@@ -3,7 +3,7 @@ ansible_host: "{{ lookup('env','ANSIBLE_HOST') }}"
 hostname: "{{ lookup('env','HOSTNAME') }}"
 domain: "{{ lookup('env','DOMAIN') }}"
 config_pass: "{{ lookup('env','CONFIG_PASS') }}"
-bootstrap_dns: "{{ lookup('env','BOOTSTRAP_DNS') }}"
+public_dns: "{{ lookup('env','PUBLIC_DNS') }}"
 ##=====TODO========================================
 ## Create a DEV env file looking like this:
 ## ANSIBLE_HOST=10.32.0.1
@@ -26,19 +26,21 @@ AuthorizedKeysFile:
 
 ## Setting name: "auto" causes the playbook to assign the outside interface to the first ethernet interface
 outside_interface:
-  ip: "{{ lookup('env','OUTSIDE_INTERFACE_IP') }}"
-  cidr: "{{ lookup('env','OUTSIDE_INTERFACE_CIDR') }}"
-  gw: "{{ lookup('env','OUTSIDE_INTERFACE_GW') }}"
-  mask: "{{ lookup('env','OUTSIDE_INTERFACE_MASK') }}"
-  secondary: "{{ lookup('env','OUTSIDE_INTERFACE_SECONDARY') }}"
-  name: "{{ lookup('env','OUTSIDE_INTERFACE_NAME') }}"
+  ip: "{{ lookup('env','OUTSIDE_INTERFACE_IP') }}"  SEAN--->>>>   ip: "{{ lookup('env','DEV_OUTSIDE_IP') }}"
+  cidr: "{{ lookup('env','OUTSIDE_INTERFACE_CIDR') }}"            cidr: "{{ lookup('env','DEV_OUTSIDE_CIDR') }}"
+  gw: "{{ lookup('env','OUTSIDE_INTERFACE_GW') }}"                gw: "{{ lookup('env','DEV_OUTSIDE_GW') }}"
+  mask: "{{ lookup('env','OUTSIDE_INTERFACE_MASK') }}"            mask: "{{ lookup('env','DEV_OUTSIDE_MASK') }}"
+  name: "{{ lookup('env','OUTSIDE_INTERFACE_NAME') }}"            name: "{{ lookup('env','DEV_OUTSIDE_NAME') }}"
+  sams:
+#  - ip: "{{ lookup('env','SOME_OUTSIDE_IP') }}"  # Use this when adding a secondary address to the outside (INTEGRATION for instance)
 
 ## Setting name: "auto" causes the playbook to assign the inside interface to the second ethernet interface
 inside_interface:
-  ip: "{{ lookup('env','INSIDE_INTERFACE_IP') }}"
-  cidr: "{{ lookup('env','INSIDE_INTERFACE_CIDR') }}"
-  mask: "{{ lookup('env','INSIDE_INTERFACE_MASK') }}"
-  name: "{{ lookup('env','INSIDE_INTERFACE_NAME') }}"
+  ip: "{{ lookup('env','DEV_INSIDE_IP') }}"
+  cidr: "{{ lookup('env','DEV_INSIDE_CIDR') }}"
+  mask: "{{ lookup('env','DEV_INSIDE_MASK') }}"
+  name: "{{ lookup('env','DEV_INSIDE_NAME') }}"
+
 
 ## Setting targets here will create iptables forwarding rules
 ## Please create a name of the form "PROTOCOL to HOST"

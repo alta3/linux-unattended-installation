@@ -2,7 +2,7 @@
 network:
   version: 2
   ethernets:
-    {{ eth0 }}:
+    {{ outside_interface.name }}:
       dhcp4: false 
       addresses: 
       - {{ outside_interface.ip  }}/{{  outside_interface.cidr }}
@@ -11,11 +11,11 @@ network:
 {% endfor %}
       gateway4: {{ outside_interface.gw }}
       optional: true
-    {{ eth1 }}:
+    {{ inside_interface.name }}:
       dhcp4: false
       optional: true
       addresses: [{{ inside_interface.ip  }}/{{  inside_interface.cidr }}]
       nameservers:
         addresses:
-        - {{ bootstrap_dns }}
+        - {{ public_dns }}
 
