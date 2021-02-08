@@ -1,0 +1,34 @@
+all:
+  children:
+    dev:
+      hosts:
+        router-dev:
+        beachhead-dev:
+        sumi-01:
+        sumi-02:
+        sumi-03:
+    prod:
+      hosts:
+        router-prod:
+        beachhead-prod
+        sumi-04:
+        sumi-05:
+        sumi-06:
+        sumi-07:
+        sumi-08:
+        sumi-09:
+        sumi-10:
+        sumi-11:
+        sumi-12:
+        sumi-13:
+        sumi-14:
+        sumi-15:
+        sumi-16:
+        sumi-17:
+        sumi-18:
+        sumi-19:
+        sumi-20:
+
+    
+   
+

@@ -1,0 +1,60 @@
+## ====DEVELOPMENT===========
+ansible_host: "{{ lookup('env','ANSIBLE_HOST') }}"
+hostname: "{{ lookup('env','HOSTNAME') }}"
+domain: "{{ lookup('env','DOMAIN') }}"
+config_pass: "{{ lookup('env','CONFIG_PASS') }}"
+bootstrap_dns: "{{ lookup('env','BOOTSTRAP_DNS') }}"
+##=====TODO========================================
+## Create a DEV env file looking like this:
+## ANSIBLE_HOST=10.32.0.1
+## Edit this file to look like this:
+## ansible_host: {{ lookup('env','ANSIBLE_HOST') }}
+## ================================================
+boot_disk: "{{ lookup('env','BOOT_DISK') }}"
+usb_stick: "{{ lookup('env','USB_STICK') }}"
+seed_file: "{{ lookup('env','SEED_FILE') }}"
+key_path: "{{ lookup('env','KEY_PATH') }}"
+
+development: "{{ lookup('env','DEVELOPMENT') }}"
+integration: "{{ lookup('env','INTEGRATION') }}"
+production: "{{ lookup('env','PRODUCTION') }}"
+host_desc_one_liner: "{{ lookup('env','HOST_DESC_ONE_LINER') }}"
+
+AuthorizedKeysFile:
+- "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
+- /"{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
+
+## Setting name: "auto" causes the playbook to assign the outside interface to the first ethernet interface
+outside_interface:
+  ip: "{{ lookup('env','OUTSIDE_INTERFACE_IP') }}"
+  cidr: "{{ lookup('env','OUTSIDE_INTERFACE_CIDR') }}"
+  gw: "{{ lookup('env','OUTSIDE_INTERFACE_GW') }}"
+  mask: "{{ lookup('env','OUTSIDE_INTERFACE_MASK') }}"
+  secondary: "{{ lookup('env','OUTSIDE_INTERFACE_SECONDARY') }}"
+  name: "{{ lookup('env','OUTSIDE_INTERFACE_NAME') }}"
+
+## Setting name: "auto" causes the playbook to assign the inside interface to the second ethernet interface
+inside_interface:
+  ip: "{{ lookup('env','INSIDE_INTERFACE_IP') }}"
+  cidr: "{{ lookup('env','INSIDE_INTERFACE_CIDR') }}"
+  mask: "{{ lookup('env','INSIDE_INTERFACE_MASK') }}"
+  name: "{{ lookup('env','INSIDE_INTERFACE_NAME') }}"
+
+## Setting targets here will create iptables forwarding rules
+## Please create a name of the form "PROTOCOL to HOST"
+nat_targets:
+- dport: "{{ lookup('env','NAT_SSH_DPORT') }}"
+  dnat: "{{ lookup('env','NAT_SSH_DNAT') }}"
+  name: "{{ lookup('env','NAT_SSH_NAME') }}"
+
+- dport: "{{ lookup('env','NAT_HTTP_DPORT') }}"
+  dnat: "{{ lookup('env','NAT_HTTP_DNAT') }}"
+  name: "{{ lookup('env','NAT_HTTP_NAME') }}"
+
+- dport: "{{ lookup('env','NAT_HTTPS_DPORT') }}"
+  dnat: "{{ lookup('env','NAT_HTTPS_DNAT') }}"
+  name: "{{ lookup('env','NAT_HTTPS_NAME') }}"
+
+- dport: "{{ lookup('env','NAT_SFTP_DPORT') }}"
+  dnat: "{{ lookup('env','NAT_SFTP_DNAT') }}"
+  name: "{{ lookup('env','NAT_SFTP_NAME') }}"
