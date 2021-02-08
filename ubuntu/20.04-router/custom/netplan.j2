@@ -1,0 +1,21 @@
+---
+network:
+  version: 2
+  ethernets:
+    {{ eth0 }}:
+      dhcp4: false 
+      addresses: 
+      - {{ outside_interface.ip  }}/{{  outside_interface.cidr }}
+{% for sam in sams }} %}
+      - {{ outside_interface.ip  }}/{{  outside_interface.cidr }}
+{% endfor %}
+      gateway4: {{ outside_interface.gw }}
+      optional: true
+    {{ eth1 }}:
+      dhcp4: false
+      optional: true
+      addresses: [{{ inside_interface.ip  }}/{{  inside_interface.cidr }}]
+      nameservers:
+        addresses:
+        - {{ bootstrap_dns }}
+

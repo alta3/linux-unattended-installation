@@ -1,0 +1,33 @@
+# ROUTER RULES
+# ===================================================================
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+# Note: FORWARD rules impact routing permissions, therefore FORWARD rules
+#       accept or reject, but do not change anything like a NAT funtion 
+#       See PREROUTING for NAT and port forwarding
+# Allowing established inbound traffic
+-A FORWARD -i {{ eth0 }} -o {{ eth1 }} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+# Allowing established outbound traffic
+-A FORWARD -i {{ eth1 }}  -o {{ eth0 }} -j ACCEPT
+
+{% for target in nat_targets %}
+# Allowing traffic for {{ target.name }}
+-A FORWARD -i {{ eth0 }} -o {{ eth1 }} -p tcp -m tcp --dport {{ target.dport }}  --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j ACCEPT
+{% endfor %}
+
+COMMIT
+# PREROUTING rules handle NAT functions which changes:
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+{% for target in nat_targets %}
+# NAT traffic for "{{ target.name }}" 
+-A PREROUTING -i {{ eth0 }} -p tcp -m tcp --dport {{ target.dport }} -j DNAT --to-destination {{ target.dnat }}
+{% endfor %}
+
+-A POSTROUTING -o {{ eth0 }} -j MASQUERADE
+COMMIT

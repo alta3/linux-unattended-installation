@@ -1,0 +1,11 @@
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+{% if sshd_subsystem_string.true %}
+Subsystem     {{ sshd_subsystem_string }} 
+{% endif %}
+ListenAddress {{ ssh_listen_ip }}
+PermitRootLogin prohibit-password

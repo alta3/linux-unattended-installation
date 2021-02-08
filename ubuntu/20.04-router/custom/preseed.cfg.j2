@@ -1,11 +1,9 @@
-### Preseed for Ubuntu 18.04
+### Preseed for Ubuntu 20.04
 # Derived from: https://help.ubuntu.com/lts/installation-guide/example-preseed.txt
 
 ### Compatibility
 # Tested with the netboot image:
-# http://archive.ubuntu.com/ubuntu/dists/bionic/main/installer-amd64/current/images/netboot/mini.iso
-# Might work with the regular image (not tested):
-# http://cdimage.ubuntu.com/releases/18.04/release/ubuntu-18.04-server-amd64.iso
+# http://archive.ubuntu.com/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/mini.iso
 
 ### Authentication
 # We recommend to use public key authentication and therefore disabled the root
@@ -22,7 +20,7 @@
 # In case you want to use a vanilla ISO image, please use the following boot
 # instructions to load the preseed file (press ESC and enter in boot prompt):
 #
-# install auto=true priority=critical url=https://raw.githubusercontent.com/coreprocess/linux-unattended-installation/master/ubuntu/18.04/custom/preseed.cfg
+# install auto=true priority=critical url=https://raw.githubusercontent.com/coreprocess/linux-unattended-installation/master/ubuntu/20.04/custom/preseed.cfg
 #
 # Note: you will need to adjust the "preseed/late_command" variable to match
 #       your environment in case you do not use the build-iso.sh script.
@@ -44,6 +42,20 @@ d-i netcfg/hostname string device
 d-i netcfg/get_hostname string device
 d-i netcfg/get_domain string unnamed
 d-i hw-detect/load_firmware boolean true
+
+# SELECT INTERFACE - CAREFUL MAKE THIS MATCH YOUR SYSTEM
+d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/get_nameservers string {{ eth0_nameserver }}
+d-i netcfg/choose_interface select {{ eth0_name }}
+d-i netcfg/get_ipaddress string {{ eth0_v4_addr }}
+d-i netcfg/get_netmask string {{ eth0_v4_mask }}
+d-i netcfg/get_gateway string {{ eth0_v4_gw }}
+d-i netcfg/confirm_static boolean true
+
+# FORTUNATELY, DHCP OVERRIDES THESE SETTINGS SO ANYTHING HERE WILL DO
+d-i netcfg/hostname string {{ hostname }}
+d-i netcfg/get_domain string {{ eth0_domain }}
+
 
 ### Mirror settings
 d-i mirror/country string manual
@@ -114,7 +126,7 @@ d-i grub-installer/with_other_os boolean true
 
 ### Disk layout
 
-# Keep 25% free space
+# Use entire disk
 d-i partman-auto/expert_recipe string         \
   boot-root ::                                \
     1 1 1 free                                \
@@ -142,50 +154,11 @@ d-i partman-auto/expert_recipe string         \
       mountpoint{ / }                         \
       lv_name{ root }                         \
     .                                         \
-    256 25600000 1000000000 ext4              \
-      $lvmok{ }                               \
-      method{ keep }                          \
-      lv_name{ placeholder }                  \
-    .                                         \
-    200% 200% 200% linux-swap                 \
+    20000 20000 20000 linux-swap              \
       $lvmok{ }                               \
       method{ swap } format{ }                \
       lv_name{ swap }                         \
     .
-
-# Use entire disk
-#d-i partman-auto/expert_recipe string         \
-#  boot-root ::                                \
-#    1 1 1 free                                \
-#      $bios_boot{ }                           \
-#      method{ biosgrub }                      \
-#    .                                         \
-#    256 256 256 fat32                         \
-#      $primary{ }                             \
-#      $iflabel{ gpt }                         \
-#      $reusemethod{ }                         \
-#      method{ efi } format{ }                 \
-#      mountpoint{ /boot/efi }                 \
-#    .                                         \
-#    512 512 512 ext4                          \
-#      $primary{ }                             \
-#      $bootable{ }                            \
-#      method{ format } format{ }              \
-#      use_filesystem{ } filesystem{ ext4 }    \
-#      mountpoint{ /boot }                     \
-#    .                                         \
-#    1024 102400000 1000000000 ext4            \
-#      $lvmok{ }                               \
-#      method{ format } format{ }              \
-#      use_filesystem{ } filesystem{ ext4 }    \
-#      mountpoint{ / }                         \
-#      lv_name{ root }                         \
-#    .                                         \
-#    200% 200% 200% linux-swap                 \
-#      $lvmok{ }                               \
-#      method{ swap } format{ }                \
-#      lv_name{ swap }                         \
-#    .
 
 ### Base system installation
 d-i base-installer/install-recommends boolean true
@@ -202,24 +175,18 @@ d-i apt-setup/security_path string /ubuntu
 
 ### Package selection
 d-i tasksel/first multiselect none
-d-i pkgsel/include string openssh-server python
+d-i pkgsel/include string openssh-server python {{ preseed_additional_apts_string }}
 d-i pkgsel/upgrade select full-upgrade
 d-i pkgsel/update-policy select unattended-upgrades
 
 ### Finishing up the installation
-d-i preseed/late_command string \
- cp -r /custom /target/custom; \
- in-target sh -c 'lvremove -f --noudevsync main/placeholder || true'; \
- in-target sh -c 'usermod -p "!" root'; \
- in-target sh -c 'mkdir -p --mode=0700 /root/.ssh && cat /custom/userkey.pub > /root/.ssh/authorized_keys && chmod 0600 /root/.ssh/authorized_keys';  \
- in-target sh -c 'sed -i "s/^#PermitRootLogin.*\$/PermitRootLogin prohibit-password/g" /etc/ssh/sshd_config'; \
- in-target sh -c 'rm -f /etc/ssh/ssh_host_*_key* && mkdir -p /usr/lib/systemd/system && cp /custom/ssh-host-keygen.service /usr/lib/systemd/system/ssh-host-keygen.service && systemctl enable ssh-host-keygen.service'; \
- in-target sh -c 'echo "IPv4: \\\4" >> /etc/issue && echo "IPv6: \\\6" >> /etc/issue && echo "" >> /etc/issue'; \
- in-target sh -c 'eject || true'; \
- rm -r /target/custom;
+{{ entire_preseed_late_command }} 
 d-i debian-installer/splash boolean false
 d-i cdrom-detect/eject boolean true
 
 ### Shutdown machine
 d-i finish-install/reboot_in_progress note
+{% if poweroff_when_done %}
 d-i debian-installer/exit/poweroff boolean true
+{% endif %}
+

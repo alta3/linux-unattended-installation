@@ -1,0 +1,10 @@
+# Ansible managed list of dnsmasq DNS records.
+# Undercloud Host FQDNs
+{% for hosts in {{ this_cloud }} %}
+{{ ansible_host_ip }},{{ ansible_hostname }}
+{% endfor %}
+
+# Other FQDN assignments
+{% for fqdn_record in {{ fqdn_records }} %}
+{{ fqdn_ip }},{{ fqdn_name }}
+{% endfor %}
