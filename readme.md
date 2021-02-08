@@ -5,16 +5,16 @@ This branch of coreprocess/linux-unattended-installation addresses a specific re
  ![Bootstrapping a cloud](https://static.alta3.com/images/cloud-bootstrap.png)
 
 ## Rebuilding the cloud from bare metal
-The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that NOTHING is in place except Ethernet connectivity.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a soluition that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
+The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that NOTHING is in place except Ethernet connectivity.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a solution that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
 1. bring up a router, dns, dhcp entirely from preseed
 2. bring up a beachhead server to cloud ansible playbooks and start building entirely from preseed.
 3. bring up the compute nodes
 4. Unleash ansible to configure everything.
-5. Try to be completely restored in less that 20 mintutes total. 
+5. Try to be completely restored in less that 20 minutes total. 
 6. WARNING: You will NEVER hit that goal without a well written bootstrap process
 
 ## The router
-We want to build a router from Ubuntu, just like all our other hosts. Therefore, we can easily manage it with ansible as it appears as another host, stripped down to bare essentials. Unfortunately, a minimal preseed will not work for this task. A router is born directly connected to the internet and must begin its life as a secure host with a public address which is not supplied by DHCP. A router also has at least two interfaces, but preseed can configure only one interface unless a netplan is pushed as a late command, which works well but this requires a custom preseed for our routers. Since there is no other services, the router must be created autonimously from preseed. The issues are:
+We want to build a router from Ubuntu, just like all our other hosts. Therefore, we can easily manage it with ansible as it appears as another host, stripped down to bare essentials. Unfortunately, a minimal preseed will not work for this task. A router is born directly connected to the internet and must begin its life as a secure host with a public address which is not supplied by DHCP. A router also has at least two interfaces, but preseed can configure only one interface unless a netplan is pushed as a late command, which works well but this requires a custom preseed for our routers. Since there is no other services, the router must be created autonomously from preseed. The issues are:
 - Push a netplan to configure inside and outside interfaces
 - Install DNSMasq along with the config, host-dns, host-dhcp, dhcp-options files which are all quite small at bootstrap.
 - Set up iptables to handle basic port forwards and ip masquerade
@@ -24,7 +24,7 @@ We want to build a router from Ubuntu, just like all our other hosts. Therefore,
 - There may be more to be added to this list
 
 ## Building an SSH landing point (Beachhead)
-Once the router is in place, a reliable landing point is needed as the base of operations. We call this point "beachhead"  This is where ansible will be run to do the heavy lifting necessary to configure the compute nodes. This server must also be built autonimously from preseed
+Once the router is in place, a reliable landing point is needed as the base of operations. We call this point "beachhead"  This is where ansible will be run to do the heavy lifting necessary to configure the compute nodes. This server must also be built autonomously from preseed
 - Centralized logging
 - repository mirror
 - Other essential services
@@ -60,7 +60,7 @@ We will create three preseed types
 * USB bootable hybrid ISO image.
 * UEFI and BIOS mode supported.
 
-### Install Dependancies
+### Install Dependencies
 
 #### Ubuntu 20.04 ISO builder"
 
@@ -90,26 +90,26 @@ We will create three preseed types
     ├── readme.md
     └── ubuntu
         ├── 20.04
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
         ├── 20.04-beachhead
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
         ├── 20.04-compute
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
+        │   ├── build-iso.sh
+        │   └── custom
+        │       ├── boot-menu.patch
+        │       ├── custom
+        │       ├── preseed.cfg
+        │       └── ssh-host-keygen.service
         └── 20.04-router
             ├── build-iso.sh
             └── custom
@@ -119,7 +119,7 @@ We will create three preseed types
                 └── ssh-host-keygen.service               
         ```
 
-7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as approprate. All j2 files require ansible to process them before you can use them. 
+7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as appropriate. All j2 files require ansible to process them before you can use them. 
 
 8. Do you have an RSA key generated? YES or NO???
 
@@ -139,11 +139,11 @@ We will create three preseed types
 
     `ssh-keygen` and accept the defaults.
 
-10. Just for fun, run the `build-iso.sh` to create the most basic bootstrap usb. This one will work with no modication so that you can see how the software works.   
+10. Just for fun, run the `build-iso.sh` to create the most basic bootstrap usb. This one will work with no modification so that you can see how the software works.   
 
     `./ubuntu/20.04/build-iso.sh  ~/.ssh/.ssh/id_rsa.pub ~/my-first-iso.iso`  
     
-    >It is not recommended, but you can do the same thing with no paramters, like this:
+    >It is not recommended, but you can do the same thing with no parameters, like this:
 
     `./ubuntu/20.04/build-iso.sh`
     
@@ -188,19 +188,19 @@ We will create three preseed types
     `sudo cp initrd.gz ~/iso-stuff`  
     `cd ~/iso-stuff/`  
     `gunzip initrd.gz` (Unzip the gzip file)  
-    `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archivie file (linux kernel can boot from CPIO archive, not tar, hence, CPIO archive is used)  
+    `ls` and notice that only `initrd` is present. That is because initrd is a CPIO archive file (Linux kernel can boot from CPIO archive, not tar, hence, CPIO archive is used)  
     `cpio -i < initrd` - This will unarchive the initrd file.  
     `ll` will reveal a posix file system!  
-    Now look around. This is the filesystem that will boot in ramdisk, permitting unfettered access to the harddrives. Hopefully it should all make sense now, (at least it did for me.)  
+    Now look around. This is the file system that will boot in ramdisk, permitting unfettered access to the hard drives. Hopefully it should all make sense now, (at least it did for me.)  
     `umount /dev/sdb1`  and continue!  
 
 16. Find a test machine that is OK to be COMPLETELY rebuilt. Nothing will remain on this target machine. (You have been warned!)
 
-17. Set the TEST MACHINE BIOS to boot-select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB reinstalling the OS over and over again. You certianly don't want this.
+17. Set the TEST MACHINE BIOS to boot-select the hard drive as primary, USB as secondary, or the machine will potentially reboot from the USB reinstalling the OS over and over again. You certainly don't want this.
 
 18. Plug your USB key into the test machine and boot select the USB key. Within 10 seconds the test machine disk will be reset completely. No turning back now, which is what you want, right?  
 
-19. Your machine will complete the installtion in about 12 minutes (with 1 Gbps internet access and SSD drive in the test machine). When complete, setup ejects the ISO/CD.
+19. Your machine will complete the installation in about 12 minutes (with 1 Gbps internet access and SSD drive in the test machine). When complete, setup ejects the ISO/CD.
 
 20. When the machine boots, it will display the IPV4 and IPV6 addresses on the console.
 
@@ -228,7 +228,7 @@ Each parameter is explained in the above URL, but I will break them out here as 
 | :--- | :--- | :--- |
 |"$BIN_XORRISO" | |
 |-as |mkisofs| mkisofs = Macintosh ISO File System|
-|-r |  |  Create a normal linux filename with access permissions to make all files readable by everybody. |
+|-r |  |  Create a normal Linux filename with access permissions to make all files readable by everybody. |
 |-V |"ubuntu_1804_netboot_unattended"| ISO 9660 Volume ID  Hmmm, why is this not "ubuntu_2004" ???|
 |-J | | enables MS-Windows UCS-2 names via Joliet extension|
 |-b | isolinux.bin |El Torito boot image for PC-BIOS|
@@ -243,6 +243,8 @@ Each parameter is explained in the above URL, but I will break them out here as 
 |-no-emul-boot  |  | Again??|
 |-isohybrid-gpt-basdat | | boot image is GPT partition with EFI Master Boot Record|
 |-o |"$TARGET_ISO" ./|  sets the ISO file name|
+
+
 
 
 
