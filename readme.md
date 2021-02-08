@@ -117,7 +117,7 @@ We will create three preseed types
                 ├── custom
                 ├── preseed.cfg
                 └── ssh-host-keygen.service               
-        ```
+    ```
 
 7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as appropriate. All j2 files require ansible to process them before you can use them. 
 
