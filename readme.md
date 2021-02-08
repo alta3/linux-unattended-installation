@@ -204,14 +204,11 @@ We will create three preseed types
 
 20. When the machine boots, it will display the IPV4 and IPV6 addresses on the console.
 
-21. SSH into your new machine as ubuntu@IPV4 address
+21. SSH into your new machine as ubuntu@IPV4 address. FYI: The ssh host key of your new machine will be generated on first boot
 
-22. FYI: The ssh host key of your new machine will be generated on first boot.
-
-23. A neat trick is the dd the master boot record of the test machine SSD, then reboot the test machine. Since you clobbered the SSD of the test machine, the USB key will be selected as secondary and re-install. This time you can time how long it takes from reboot to OS reinstalled.
+22. While you are connected to your new machine, it is easy to repeat the test. Just dd the master boot record of the test machine's SSD, start a timer on your phone and reboot. Since you just clobbered the SSD's MBR, the USB key will be selected as secondary and re-install the OS. Record your results. It should be about 12 minutes with 1 Gbps internet access and an SSD. 
 
 "Danke für ein tolles Repo" coreprocess!  (Ein Amerikaner bekommt nie die Chance, mit Deutsch zu üben) 
-
 
 
 -----
