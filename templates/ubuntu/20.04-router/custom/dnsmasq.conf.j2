@@ -1,0 +1,37 @@
+# Ansible managed, please edit the playbook NOT THIS FILE!
+
+listen-address={{ inside_interface.ip }}
+
+# upstream config
+no-resolv
+server={{ public_dns }}
+server={{ public_dns_2 }}
+domain-needed
+bogus-priv
+dhcp-lease-max=10000
+
+# logging DEBUG - Uncomment to see an insane amount of dhcp messages
+#log-async
+#log-queries
+#log-dhcp
+
+# nothing should use this domain, it  is here because
+# it is required by dhcp-fqdn as catch-all domain
+domain=nofqdn
+
+# ignore local /etc/hosts
+no-hosts
+
+# dhcp
+dhcp-range={{ dips_dhcp_range_low }},{{ dips_dhcp_range_high }},{{ dips_dhcp_lease_time }}
+dhcp-fqdn
+
+# default options
+dhcp-option=3,{{ inside_interface.ip }} 
+dhcp-option=119,{{ inside_domain }}
+dhcp-option=15,nofqdn
+
+
+dhcp-optsdir={{ dips_dnsmasq_optsdir }}    # DHCP Options 
+dhcp-hostsdir={{ dips_dnsmasq_hostsdir }}  # DHCP Static Leases
+hostsdir={{ dips_dnsmasq_hosts }}          # DNS name resolution, formatted like a linux host file

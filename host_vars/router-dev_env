@@ -1,15 +1,18 @@
 ## ====DEVELOPMENT===========
-user: "{{ lookup('env','ROUTER_USER') }}"
-user_path: "/home/{{ user }}"
 sshd_subsystem_string_exists: true
-sshd_subsystem_string: "{{ lookup('env','ROUTER_SSHD_SUBSYSTEM_STRING') }}"
-ssh_listen_ip:         "{{ lookup('env','ROUTER_INSIDE_IP') }}"
-ansible_host:          "{{ lookup('env','ROUTER_INSIDE_IP') }}"
-hostname:              "{{ lookup('env','HOSTNAME') }}"
-inside_domain:         "{{ lookup('env','INSIDE_DOMAIN') }}"
-config_pass:           "{{ lookup('env','CONFIG_PASS') }}"
-public_dns:           "{{ lookup('env','PUBLIC_DNS') }}"
-public_dns_2:           "{{ lookup('env','PUBLIC_DNS_2') }}"
+sshd_subsystem_string: "{{ lookup('env','SSHD_SUBSYSTEM_STRING') }}"
+ssh_listen_ip: "{{ lookup('env','ROUTER_INSIDE_IP') }}"
+ansible_host: "{{ lookup('env','ROUTER_INSIDE_IP') }}"
+hostname: "{{ lookup('env','HOSTNAME') }}"
+domain: "{{ lookup('env','DOMAIN') }}"
+config_pass: "{{ lookup('env','CONFIG_PASS') }}"
+public_dns: "{{ lookup('env','PUBLIC_DNS') }}"
+##=====TODO========================================
+## Create a DEV env file looking like this:
+## ANSIBLE_HOST=10.32.0.1
+## Edit this file to look like this:
+## ansible_host: {{ lookup('env','ANSIBLE_HOST') }}
+## ================================================
 boot_disk: "{{ lookup('env','BOOT_DISK') }}"
 usb_stick: "{{ lookup('env','USB_STICK') }}"
 seed_file: "{{ lookup('env','SEED_FILE') }}"
@@ -24,26 +27,14 @@ AuthorizedKeysFile:
 - "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
 - "{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
 
-dips_dhcp_range_low: "{{ lookup('env','DIPS_DHCP_RANGE_LOW') }}"
-dips_dhcp_range_high: "{{ lookup('env','DIPS_DHCP_RANGE_HIGH') }}"
-dips_dhcp_lease_time: "{{ lookup('env','DIPS_DHCP_LEASE_TIME') }}"
-
-dips_dnsmasq_optsdir: "{{ lookup('env','DIPS_DNSMASQ_OPTSDIR') }}"
-dips_dnsmasq_hostsdir: "{{ lookup('env','DIPS_DNSMASQ_HOSTSDIR') }}"
-dips_dnsmasq_hosts: "{{ lookup('env','DIPS_DNSMASQ_HOSTS') }}"
-
-br_mmac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
-
-
 ## Setting name: "auto" causes the playbook to assign the outside interface to the first ethernet interface
 outside_interface:
-  sams:
-  - ip: "{{ lookup('env','ROUTER_OUTSIDE_IP') }}"
+  ip: "{{ lookup('env','ROUTER_OUTSIDE_IP') }}"
   cidr: "{{ lookup('env','ROUTER_OUTSIDE_CIDR') }}"
   gw: "{{ lookup('env','ROUTER_OUTSIDE_GW') }}"
   mask: "{{ lookup('env','ROUTER_OUTSIDE_MASK') }}"
   name: "{{ lookup('env','ROUTER_OUTSIDE_INTERFACE_NAME') }}"
-
+  sams:
 #  - ip: "{{ lookup('env','SOME_OUTSIDE_IP') }}"  # Use this when adding a secondary address to the outside (INTEGRATION for instance)
 
 ## Setting name: "auto" causes the playbook to assign the inside interface to the second ethernet interface
@@ -52,11 +43,6 @@ inside_interface:
   cidr: "{{ lookup('env','ROUTER_INSIDE_CIDR') }}"
   mask: "{{ lookup('env','ROUTER_INSIDE_MASK') }}"
   name: "{{ lookup('env','ROUTER_INSIDE_INTERFACE_NAME') }}"
-
-br_mac: "{{ lookup('env','ROUTER_DEV_BR_MAC') }}"
-nic_mac: "{{ lookup('env','ROUTER_DEV_NIC_MAC') }}"
-fqdn: "{{ lookup('env','ROUTER_DEV_FQDN') }}"
-ip: "{{ inside_interface.ip }}"
 
 
 ## Setting targets here will create iptables forwarding rules
@@ -78,5 +64,3 @@ nat_targets:
   dnat: "{{ lookup('env','NAT_SFTP_DNAT') }}"
   name: "{{ lookup('env','NAT_SFTP_NAME') }}"
 
-preseed_additional_apts_string: openssh-server python3 dnsmasq 
-poweroff_when_done: false  

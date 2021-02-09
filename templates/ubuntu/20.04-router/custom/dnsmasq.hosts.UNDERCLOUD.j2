@@ -1,0 +1,12 @@
+#eAnsible managed list of dnsmasq DNS records.
+# Undercloud Host FQDNs
+{% for item in groups['dev'] %}
+{{ hostvars[item].ip }},{{ hostvars[item].fqdn }}
+{% endfor %}
+
+# Other FQDN assignments
+{{ labs_host_record }}
+{{ registry_host_record }}
+{{ mirror_host_record }}
+{{ static_host_record }} 
+{{ sipgate_host_record }} 

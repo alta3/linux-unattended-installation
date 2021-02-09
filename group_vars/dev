@@ -1,0 +1,7 @@
+undercloud_dhcp_options_set: "{{ lookup('env','UNDERCLOUD_DHCP_OPTIONS_SET') }}"
+sipgate_host_record:  "{{ lookup('env','SIPGATE_HOST_RECORD') }}"   
+labs_host_record:     "{{ lookup('env','LABS_HOST_RECORD') }}"
+registry_host_record: "{{ lookup('env','REGISTRY_HOST_RECORD') }}"
+mirror_host_record:   "{{ lookup('env','MIRROR_HOST_RECORD ') }}"
+static_host_record:   "{{ lookup('env','STATIC_HOST_RECORD ') }}"
+

@@ -5,9 +5,8 @@ network:
     {{ outside_interface.name }}:
       dhcp4: false 
       addresses: 
-      - {{ outside_interface.ip  }}/{{  outside_interface.cidr }}
-{% for sam in sams }} %}
-      - {{ outside_interface.ip  }}/{{  outside_interface.cidr }}
+{% for sam in outside_interface.sams %}
+      - {{ sam.ip  }}/{{ outside_interface.cidr }}
 {% endfor %}
       gateway4: {{ outside_interface.gw }}
       optional: true

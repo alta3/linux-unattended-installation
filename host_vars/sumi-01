@@ -1,0 +1,4 @@
+br_mac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
+nic_mac: "{{ lookup('env','SUMI_01_NIC_MAC') }}"
+fqdn: "{{ lookup('env','SUMI_01_FQDN') }}"
+ip: "{{ lookup('env','SUMI_01_IP') }}"

@@ -1,0 +1,7 @@
+br_mac: "{{ lookup('env','SUMI_03_BR_MAC') }}"
+nic_mac: "{{ lookup('env','SUMI_03_NIC_MAC') }}"
+dhcp_option_set: "{{ lookup('env','SUMI_03_DHCP_OPTION_SET') }}"
+fqdn: "{{ lookup('env','SUMI_03_FQDN') }}"
+ip: "{{ lookup('env','SUMI_03_IP') }}"
+
+

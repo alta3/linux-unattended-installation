@@ -1,0 +1,6 @@
+# Ansible managed list of bare metal servers in this cloud
+{% for item in groups['dev'] %}
+{{ hostvars[item].br_mac }},{{ hostvars[item].nic_mac }},set:{{ undercloud_dhcp_options_set }},{{ hostvars[item].fqdn }},{{ hostvars[item].ip }}
+{% endfor %}
+
+

@@ -1,5 +1,0 @@
-# Ansible managed list of bare metal servers in this cloud
-{% for hosts in {{ this_cloud }} %}
-{{ bridge_mac }} ,{{ nic_mac }},undercloud,{{ ansible_hostname }},{{ ansible_host_ip }}
-{% endfor %}
-

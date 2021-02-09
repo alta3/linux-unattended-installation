@@ -8,13 +8,13 @@
 #       accept or reject, but do not change anything like a NAT funtion 
 #       See PREROUTING for NAT and port forwarding
 # Allowing established inbound traffic
--A FORWARD -i {{ eth0 }} -o {{ eth1 }} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -i {{ outside_interface.name }} -o {{ inside_interface.name }} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
 # Allowing established outbound traffic
--A FORWARD -i {{ eth1 }}  -o {{ eth0 }} -j ACCEPT
+-A FORWARD -i {{ inside_interface.name }}  -o {{ outside_interface.name }} -j ACCEPT
 
 {% for target in nat_targets %}
 # Allowing traffic for {{ target.name }}
--A FORWARD -i {{ eth0 }} -o {{ eth1 }} -p tcp -m tcp --dport {{ target.dport }}  --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j ACCEPT
+-A FORWARD -i {{ outside_interface.name }} -o {{ inside_interface.name }} -p tcp -m tcp --dport {{ target.dport }}  --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j ACCEPT
 {% endfor %}
 
 COMMIT
@@ -26,8 +26,8 @@ COMMIT
 :POSTROUTING ACCEPT [0:0]
 {% for target in nat_targets %}
 # NAT traffic for "{{ target.name }}" 
--A PREROUTING -i {{ eth0 }} -p tcp -m tcp --dport {{ target.dport }} -j DNAT --to-destination {{ target.dnat }}
+-A PREROUTING -i {{ outside_interface.name }} -p tcp -m tcp --dport {{ target.dport }} -j DNAT --to-destination {{ target.dnat }}
 {% endfor %}
 
--A POSTROUTING -o {{ eth0 }} -j MASQUERADE
+-A POSTROUTING -o {{ outside_interface.name }} -j MASQUERADE
 COMMIT
