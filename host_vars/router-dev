@@ -1,6 +1,9 @@
 ## ====DEVELOPMENT===========
 user: "{{ lookup('env','ROUTER_USER') }}"
-user_path: "/home/{{ user }}"
+lui_path: "ubuntu/20.04-router"
+
+keys: "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
+
 sshd_subsystem_string_exists: true
 sshd_subsystem_string: "{{ lookup('env','ROUTER_SSHD_SUBSYSTEM_STRING') }}"
 ssh_listen_ip:         "{{ lookup('env','ROUTER_INSIDE_IP') }}"

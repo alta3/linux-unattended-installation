@@ -1,16 +1,17 @@
 all:
+  hosts:
+    tower-dev:
   children:
     dev:
       hosts:
         router-dev:
-        beachhead-dev:
         sumi-01:
         sumi-02:
         sumi-03:
     prod:
       hosts:
         router-prod:
-        beachhead-prod
+        beachhead-prod:
         sumi-04:
         sumi-05:
         sumi-06:

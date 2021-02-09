@@ -21,6 +21,7 @@
       - isolinux
       - xorriso
       - tree
+      - patch
     become: true
 
   - name: build lui directories
@@ -33,26 +34,28 @@
     become: true
 
   - debug: 
-      msg: "Here's the NIC MAC: {{ hostvars[item].nic_mac }}" 
+      msg: "{{ keys }}" 
     tags: buggy
-    loop: "{{ groups['dev'] }}"
 
-  - name: Set authorized keys taken from url
+  - name: Set authorized keys from url
     authorized_key:
-      path: /home/ubuntu/lui/ubuntu/20.04-router/custom/authorized_keys"
+      path: /home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
       user: "{{ user }}" 
       state: present
       key: "https://github.com/{{ item }}.keys"
-    loop:
-      - sfeeser
-      - seaneon
-      - bryfry
-      - sgriffith3
+    loop: "{{ keys }}"
+
+  - name: Add this computer's RSA key for bootstrapping only
+    authorized_key:
+      path: /home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
+      user: "{{ user }}" 
+      state: present
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
   - name: Configure Templates
     template:
-      src: "ubuntu/20.04-router/custom/{{ item.src }}"
-      dest: "{{ user_path }}//lui/ubuntu/20.04-router/custom/{{ item.dest }}"
+      src: "{{ lui_path }}/custom/{{ item.src }}"
+      dest: "/home/{{ user }}//lui/{{ lui_path }}/custom/{{ item.dest }}"
       mode: '0644'
       owner: "{{ user }}"
       group: "{{ user }}"
@@ -77,8 +80,8 @@
 
   - name: Copy build-iso.sh to destination
     copy:
-      src: "templates/ubuntu/20.04-router/{{ item.src }}" 
-      dest: "/home/{{ user }}/lui/ubuntu/20.04-router/{{ item.dest }}"
+      src: "templates/{{ lui_path }}/{{ item.src }}" 
+      dest: "/home/{{ user }}/lui/{{ lui_path }}/{{ item.dest }}"
       owner: "{{ user }}"
       group: "{{ user }}"
       mode: 0755
@@ -87,8 +90,8 @@
       dest: build-iso.sh
     - src:  custom/boot-menu.patch
       dest: custom/boot-menu.patch
-
-
+    - src:  custom/ssh-host-keygen.service
+      dest: custom/ssh-host-keygen.service
 
 #  - name: run build-iso-sh
 
