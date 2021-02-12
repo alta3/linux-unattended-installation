@@ -4,8 +4,11 @@ This branch of coreprocess/linux-unattended-installation addresses a specific re
 
  ![Bootstrapping a cloud](https://static.alta3.com/images/cloud-bootstrap.png)
 
+## Rebuilding vs Building
+This entire approach is predicated on a desire to REBUILD the entire cloud in less than 20 minutes. This assumes that the cloud was initally built manually, using the core process bootstrap process which is already clearly documented. Once the core machines are built, we never what to go through that manual process again. The REBUILD process assumes that a USB key remains populated and dedicated to each machine. This ansible playbook which is included in this branch will build a bootstrap image customized to each machine, then dd the custom iso to each machine's USB. The next step will dd all zeros to the running hard drive, which renders the hard drive unbootable, then anisble reboots the machine and waits. The machine reboots and falls back to the USB as the only bootable drive, which starts the rebuild process, but this time the preseed is far more intellegent and morphs the embyonic machine into a working, secure, fully network connected, production ready machine the moment it is born. Ansible, still waiting, prounces on the reborn ssh-ready machine and polishes off the configuration to make each machine 100% ready. No further reboot is necessary.
+
 ## Rebuilding the cloud from bare metal
-The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that NOTHING is in place except Ethernet connectivity.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a solution that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
+The process to rebuild a small cloud (less that 40 nodes) from bare metal should be fast, reliable, and easy. Most solutions require complex infrastructure to already be in place to build a cloud. Let's take a different route. Lets assume that we will rebuild with NOTHING in place except Ethernet connectivity and a custom USB key with prebuilt ISO.  We think a bootstrap USB drive in every server should be all that is necessary to build a small cloud and then let ansible do its work. Rebuilding should be as easy as booting the USB and let it do its work. This means we need a solution that will work when there is no router, no DHCP, no beachhead, no compute nodes, nothing! Bootstrapping a cloud in this condition shoud be everyone's goal. Bootstrap order:
 1. bring up a router, dns, dhcp entirely from preseed
 2. bring up a beachhead server to cloud ansible playbooks and start building entirely from preseed.
 3. bring up the compute nodes
@@ -14,7 +17,7 @@ The process to rebuild a small cloud (less that 40 nodes) from bare metal should
 6. WARNING: You will NEVER hit that goal without a well written bootstrap process
 
 ## The router
-We want to build a router from Ubuntu, just like all our other hosts. Therefore, we can easily manage it with ansible as it appears as another host, stripped down to bare essentials. Unfortunately, a minimal preseed will not work for this task. A router is born directly connected to the internet and must begin its life as a secure host with a public address which is not supplied by DHCP. A router also has at least two interfaces, but preseed can configure only one interface unless a netplan is pushed as a late command, which works well but this requires a custom preseed for our routers. Since there is no other services, the router must be created autonomously from preseed. The issues are:
+We want to rebuild a router from Ubuntu, just like all our other hosts. Therefore, we can easily manage it with ansible as it appears as another host, stripped down to bare essentials. Unfortunately, a minimal preseed will not work for this task. A router is born directly connected to the internet and must begin its life as a secure host with a public address which is not supplied by DHCP. A router also has at least two interfaces, but preseed can configure only one interface unless a netplan is pushed as a late command, which works well but this requires a custom preseed for our routers. Since there is no other services, the router must be created autonomously from preseed. The issues are:
 - Push a netplan to configure inside and outside interfaces
 - Install DNSMasq along with the config, host-dns, host-dhcp, dhcp-options files which are all quite small at bootstrap.
 - Set up iptables to handle basic port forwards and ip masquerade
@@ -86,40 +89,43 @@ We will create three preseed types
 6. The `tree` command will show you something like this:
 
     ```
-    ├── LICENSE
-    ├── readme.md
-    └── ubuntu
-        ├── 20.04
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
-        ├── 20.04-beachhead
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
-        ├── 20.04-compute
-        │   ├── build-iso.sh
-        │   └── custom
-        │       ├── boot-menu.patch
-        │       ├── custom
-        │       ├── preseed.cfg
-        │       └── ssh-host-keygen.service
-        └── 20.04-router
-            ├── build-iso.sh
-            └── custom
-                ├── boot-menu.patch
-                ├── custom
-                ├── preseed.cfg
-                └── ssh-host-keygen.service               
+├── group_vars
+│   ├── dev
+│   └── prod
+├── host_vars
+│   ├── beachhead-dev
+│   ├── router-dev
+│   ├── sumi-01
+│   ├── sumi-02
+│   └── sumi-03
+├── hosts
+├── main.yml
+├── readme.md
+├── templates
+│   └── ubuntu
+│       ├── 20.04
+│       │   ├── build-iso.sh
+│       │   └── custom
+│       │       ├── boot-menu.patch
+│       │       ├── preseed.cfg
+│       │       └── ssh-host-keygen.service
+│       └── 20.04-a3-lui
+│           ├── build-iso.sh
+│           └── custom
+│               ├── authorized_keys.j2
+│               ├── boot-menu.patch
+│               ├── dnsmasq.conf.j2
+│               ├── dnsmasq.dhcp-hosts.UNDERCLOUD.j2
+│               ├── dnsmasq.dhcp-options.UNDERCLOUD.j2
+│               ├── dnsmasq.hosts.UNDERCLOUD.j2
+│               ├── netplan.j2
+│               ├── preseed.cfg.j2
+│               ├── rules.v4.j2
+│               ├── ssh-host-keygen.service
+│               └── sshd_conf.j2          
     ```
 
-7. Edit the files in the custom directory for your 20.04-router, 20.04-compute, and 20.04-beachhead servers as appropriate. All j2 files require ansible to process them before you can use them. 
+7. Edit the host_vars for each host. A single .env file will supply all the variables. All j2 files require ansible to process them before you can use them. A basic 20.04 option is avaialbe for the first round on manually building machines. The following documation describe the manual process to understand how coreprocess sets up a basic USB key. You must completely understand what is happening here before using ansible to automate the entire rebuild. 
 
 8. Do you have an RSA key generated? YES or NO???
 
@@ -166,7 +172,7 @@ We will create three preseed types
     └─sda3                      8:3    0 697.1G  0 part
       └─ubuntu--vg-ubuntu--lv 253:0    0   200G  0 lvm  /
     sdb                         8:32   1  29.9G  0 disk 
-    └─sdb1                      8:33   1  29.9G  0 part  <------------ IN my case, DEVICE-NAME = /dev/sdb1 (yours may be different) 
+    └─sdb1                      8:33   1  29.9G  0 part  <------------ In my case, DEVICE-NAME = /dev/sdb1 (yours may be different) 
     ```
     
 13. Remove write protection from the USB drive. In my case this would be MY COMMAND, yours will depend on the **DEVICE-NAME** assignment
