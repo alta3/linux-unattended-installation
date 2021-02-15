@@ -89,40 +89,40 @@ We will create three preseed types
 6. The `tree` command will show you something like this:
 
     ```
-├── group_vars
-│   ├── dev
-│   └── prod
-├── host_vars
-│   ├── beachhead-dev
-│   ├── router-dev
-│   ├── sumi-01
-│   ├── sumi-02
-│   └── sumi-03
-├── hosts
-├── main.yml
-├── readme.md
-├── templates
-│   └── ubuntu
-│       ├── 20.04
-│       │   ├── build-iso.sh
-│       │   └── custom
-│       │       ├── boot-menu.patch
-│       │       ├── preseed.cfg
-│       │       └── ssh-host-keygen.service
-│       └── 20.04-a3-lui
-│           ├── build-iso.sh
-│           └── custom
-│               ├── authorized_keys.j2
-│               ├── boot-menu.patch
-│               ├── dnsmasq.conf.j2
-│               ├── dnsmasq.dhcp-hosts.UNDERCLOUD.j2
-│               ├── dnsmasq.dhcp-options.UNDERCLOUD.j2
-│               ├── dnsmasq.hosts.UNDERCLOUD.j2
-│               ├── netplan.j2
-│               ├── preseed.cfg.j2
-│               ├── rules.v4.j2
-│               ├── ssh-host-keygen.service
-│               └── sshd_conf.j2          
+    ├── group_vars
+    │   ├── dev
+    │   └── prod
+    ├── host_vars
+    │   ├── beachhead-dev
+    │   ├── router-dev
+    │   ├── sumi-01
+    │   ├── sumi-02
+    │   └── sumi-03
+    ├── hosts
+    ├── main.yml
+    ├── readme.md
+    ├── templates
+    │   └── ubuntu
+    │       ├── 20.04
+    │       │   ├── build-iso.sh
+    │       │   └── custom
+    │       │       ├── boot-menu.patch
+    │       │       ├── preseed.cfg
+    │       │       └── ssh-host-keygen.service
+    │       └── 20.04-a3-lui
+    │           ├── build-iso.sh
+    │           └── custom
+    │               ├── authorized_keys.j2
+    │               ├── boot-menu.patch
+    │               ├── dnsmasq.conf.j2
+    │               ├── dnsmasq.dhcp-hosts.UNDERCLOUD.j2
+    │               ├── dnsmasq.dhcp-options.UNDERCLOUD.j2
+    │               ├── dnsmasq.hosts.UNDERCLOUD.j2
+    │               ├── netplan.j2
+    │               ├── preseed.cfg.j2
+    │               ├── rules.v4.j2
+    │               ├── ssh-host-keygen.service
+    │               └── sshd_conf.j2          
     ```
 
 7. Edit the host_vars for each host. A single .env file will supply all the variables. All j2 files require ansible to process them before you can use them. A basic 20.04 option is avaialbe for the first round on manually building machines. The following documation describe the manual process to understand how coreprocess sets up a basic USB key. You must completely understand what is happening here before using ansible to automate the entire rebuild. 
