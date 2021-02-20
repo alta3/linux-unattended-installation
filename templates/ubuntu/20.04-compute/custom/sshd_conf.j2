@@ -4,7 +4,4 @@ UsePAM yes
 X11Forwarding yes
 PrintMotd no
 AcceptEnv LANG LC_*
-{% if sshd_subsystem_string_exists %}
-Subsystem     {{ sshd_subsystem_string }} 
-{% endif %}
 PermitRootLogin prohibit-password

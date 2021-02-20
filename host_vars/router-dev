@@ -1,65 +1,77 @@
-## ====DEVELOPMENT===========
-user: "{{ lookup('env','ROUTER_USER') }}"
+## ========================== ROUTER =========================
+user:     "{{ lookup('env','ROUTER_USER') }}"
 lui_path: "ubuntu/20.04-router"
+keys:     "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
 
-keys: "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
+# DNSMasq MUST HAVE this information FROM EVERY UNDERCLOUD host to build host and dhcp-host tables
+br_mac:   "{{ lookup('env','ROUTER_DEV_BR_MAC') }}"
+nic_mac:  "{{ lookup('env','ROUTER_DEV_NIC_MAC') }}"
+fqdn:     "{{ lookup('env','ROUTER_DEV_FQDN') }}"
+ip:       "{{ inside_interface.ip }}"
 
-sshd_subsystem_string_exists: true
-sshd_subsystem_string: "{{ lookup('env','ROUTER_SSHD_SUBSYSTEM_STRING') }}"
-ssh_listen_ip:         "{{ lookup('env','ROUTER_INSIDE_IP') }}"
+#br_mmac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
+#Host configuration
 ansible_host:          "{{ lookup('env','ROUTER_INSIDE_IP') }}"
-hostname:              "{{ lookup('env','HOSTNAME') }}"
+hostname:              "{{ lookup('env','ROUTER_HOSTNAME') }}"
 inside_domain:         "{{ lookup('env','INSIDE_DOMAIN') }}"
 config_pass:           "{{ lookup('env','CONFIG_PASS') }}"
-public_dns:           "{{ lookup('env','PUBLIC_DNS') }}"
-public_dns_2:           "{{ lookup('env','PUBLIC_DNS_2') }}"
-boot_disk: "{{ lookup('env','BOOT_DISK') }}"
-usb_stick: "{{ lookup('env','USB_STICK') }}"
-seed_file: "{{ lookup('env','SEED_FILE') }}"
-key_path: "{{ lookup('env','KEY_PATH') }}"
+public_dns:            "{{ lookup('env','PUBLIC_DNS') }}"
+public_dns_2:          "{{ lookup('env','PUBLIC_DNS_2') }}"
+boot_disk:             "{{ lookup('env','BOOT_DISK') }}"
+usb_stick:             "{{ lookup('env','USB_STICK') }}"
+ubuntu_iso:            "{{ lookup('env','UBUNTU_ISO') }}"
+key_path:              "{{ lookup('env','KEY_PATH') }}"
+host_desc_one_liner:   "{{ lookup('env','HOST_DESC_ONE_LINER') }}"
+router:                true
 
-development: "{{ lookup('env','DEVELOPMENT') }}"
-integration: "{{ lookup('env','INTEGRATION') }}"
-production: "{{ lookup('env','PRODUCTION') }}"
-host_desc_one_liner: "{{ lookup('env','HOST_DESC_ONE_LINER') }}"
+
+#Cloud ID
+development:           "{{ lookup('env','DEVELOPMENT') }}"
+integration:           "{{ lookup('env','INTEGRATION') }}"
+production:            "{{ lookup('env','PRODUCTION') }}"
+
+# preseed controls and testing
+unarchive_iso_for_testing: true
+preseed_add_apts:      "{{ lookup('env','ROUTER_PRESEED_APTS') }}" 
+poweroff_when_done:    "{{ lookup('env','ROUTER_PRESEED_POWEROFF') }}"  
+lcb: "{"
+rcb: "}"
+bs: '\'
+
+## NETPLAN Information
+outside_interface:
+  sams:
+  - ip:  "{{ lookup('env','ROUTER_OUTSIDE_IP') }}"
+  cidr:  "{{ lookup('env','ROUTER_OUTSIDE_CIDR') }}"
+  gw:    "{{ lookup('env','ROUTER_OUTSIDE_GW') }}"
+  mask:  "{{ lookup('env','ROUTER_OUTSIDE_MASK') }}"
+  name:  "{{ lookup('env','ROUTER_OUTSIDE_INTERFACE_NAME') }}"
+
+inside_interface:
+  ip:    "{{ lookup('env','ROUTER_INSIDE_IP') }}"
+  cidr:  "{{ lookup('env','ROUTER_INSIDE_CIDR') }}"
+  mask:  "{{ lookup('env','ROUTER_INSIDE_MASK') }}"
+  name:  "{{ lookup('env','ROUTER_INSIDE_INTERFACE_NAME') }}"
+
+# SSH settings
+sshd_subsystem_string_exists: true
+ssh_host: true
+sshd_subsystem_string: "{{ lookup('env','ROUTER_SSHD_SUBSYSTEM_STRING') }}"
 
 AuthorizedKeysFile:
 - "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
 - "{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
 
-dips_dhcp_range_low: "{{ lookup('env','DIPS_DHCP_RANGE_LOW') }}"
-dips_dhcp_range_high: "{{ lookup('env','DIPS_DHCP_RANGE_HIGH') }}"
-dips_dhcp_lease_time: "{{ lookup('env','DIPS_DHCP_LEASE_TIME') }}"
 
-dips_dnsmasq_optsdir: "{{ lookup('env','DIPS_DNSMASQ_OPTSDIR') }}"
+# DHCP server information
+dips_dhcp_range_low:   "{{ lookup('env','DIPS_DHCP_RANGE_LOW') }}"
+dips_dhcp_range_high:  "{{ lookup('env','DIPS_DHCP_RANGE_HIGH') }}"
+dips_dhcp_lease_time:  "{{ lookup('env','DIPS_DHCP_LEASE_TIME') }}"
+
+dips_dnsmasq_optsdir:  "{{ lookup('env','DIPS_DNSMASQ_OPTSDIR') }}"
 dips_dnsmasq_hostsdir: "{{ lookup('env','DIPS_DNSMASQ_HOSTSDIR') }}"
-dips_dnsmasq_hosts: "{{ lookup('env','DIPS_DNSMASQ_HOSTS') }}"
+dips_dnsmasq_hosts:    "{{ lookup('env','DIPS_DNSMASQ_HOSTS') }}"
 
-br_mmac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
-
-
-## Setting name: "auto" causes the playbook to assign the outside interface to the first ethernet interface
-outside_interface:
-  sams:
-  - ip: "{{ lookup('env','ROUTER_OUTSIDE_IP') }}"
-  cidr: "{{ lookup('env','ROUTER_OUTSIDE_CIDR') }}"
-  gw: "{{ lookup('env','ROUTER_OUTSIDE_GW') }}"
-  mask: "{{ lookup('env','ROUTER_OUTSIDE_MASK') }}"
-  name: "{{ lookup('env','ROUTER_OUTSIDE_INTERFACE_NAME') }}"
-
-#  - ip: "{{ lookup('env','SOME_OUTSIDE_IP') }}"  # Use this when adding a secondary address to the outside (INTEGRATION for instance)
-
-## Setting name: "auto" causes the playbook to assign the inside interface to the second ethernet interface
-inside_interface:
-  ip: "{{ lookup('env','ROUTER_INSIDE_IP') }}"
-  cidr: "{{ lookup('env','ROUTER_INSIDE_CIDR') }}"
-  mask: "{{ lookup('env','ROUTER_INSIDE_MASK') }}"
-  name: "{{ lookup('env','ROUTER_INSIDE_INTERFACE_NAME') }}"
-
-br_mac: "{{ lookup('env','ROUTER_DEV_BR_MAC') }}"
-nic_mac: "{{ lookup('env','ROUTER_DEV_NIC_MAC') }}"
-fqdn: "{{ lookup('env','ROUTER_DEV_FQDN') }}"
-ip: "{{ inside_interface.ip }}"
 
 
 ## Setting targets here will create iptables forwarding rules
@@ -81,5 +93,4 @@ nat_targets:
   dnat: "{{ lookup('env','NAT_SFTP_DNAT') }}"
   name: "{{ lookup('env','NAT_SFTP_NAME') }}"
 
-preseed_additional_apts_string: openssh-server python3 dnsmasq 
-poweroff_when_done: false  
+

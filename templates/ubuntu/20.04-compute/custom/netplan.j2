@@ -1,0 +1,15 @@
+---
+network:
+  version: 2
+  ethernets:
+    {{ outside_interface.name }}:
+      dhcp4: false
+      optional: true
+      addresses:
+{% for ip in outside_interface.ip %}
+      - {{ ip }}/{{  outside_interface.cidr }}
+{% endfor %}
+      nameservers:
+        addresses:
+        - {{ public_dns }}
+

@@ -30,8 +30,12 @@ patch -p1 -i "$SCRIPT_DIR/custom/boot-menu.patch"
 # prepare assets
 cd "$TMP_INITRD_DIR"
 mkdir "./custom"
+
 cp "$SCRIPT_DIR/custom/preseed.cfg" "./preseed.cfg"
+cp -R "/home/ubuntu/lui/ubuntu/20.04-router/custom/."  "./custom"
 cp "$SCRIPT_DIR/custom/ssh-host-keygen.service" "./custom/ssh-host-keygen.service"
+ls "./custom"
+
 
 # append assets to initrd image
 cd "$TMP_INITRD_DIR"

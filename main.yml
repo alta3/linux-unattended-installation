@@ -1,6 +1,6 @@
 ---
-- name: lui a host
-  hosts: router-dev
+- name: BOOTSTRAPPING HOSTS
+  hosts: sumi-02
   gather_facts: True
   tasks:
 
@@ -24,9 +24,15 @@
       - patch
     become: true
 
+  - name: Clean lui directories  (delete them)
+    file:
+      path: /home/{{ user }}/lui
+      state: absent
+    become: true
+
   - name: build lui directories
     file:
-      path: /home/ubuntu/lui/ubuntu/20.04-router/custom
+      path: /home/{{ user }}/lui/{{ lui_path }}/custom
       state: directory 
       mode: '0755'
       owner: "{{ user }}"
@@ -34,12 +40,12 @@
     become: true
 
   - debug: 
-      msg: "{{ keys }}" 
+      msg: '{{ bs }}4{{ lcb }}{{outside_interface.name}}{{rcb}}' 
     tags: buggy
 
   - name: Set authorized keys from url
     authorized_key:
-      path: /home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
+      path: "/home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
       user: "{{ user }}" 
       state: present
       key: "https://github.com/{{ item }}.keys"
@@ -47,12 +53,12 @@
 
   - name: Add this computer's RSA key for bootstrapping only
     authorized_key:
-      path: /home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
+      path: "/home/{{ user }}/lui/{{ lui_path }}/custom/authorized_keys"
       user: "{{ user }}" 
       state: present
       key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
-  - name: Configure Templates
+  - name: Universal Host Templates
     template:
       src: "{{ lui_path }}/custom/{{ item.src }}"
       dest: "/home/{{ user }}//lui/{{ lui_path }}/custom/{{ item.dest }}"
@@ -60,6 +66,25 @@
       owner: "{{ user }}"
       group: "{{ user }}"
     become: true
+    loop:
+     - src:  sshd_conf.j2
+       dest: sshd_conf
+     - src:  netplan.j2
+       dest: netplan
+     - src:  preseed.cfg.j2
+       dest: preseed.cfg 
+     - src:  ssh-host-keygen.service
+       dest: ssh-host-keygen.service
+
+  - name: Router specific templates
+    template:
+      src: "{{ lui_path }}/custom/{{ item.src }}"
+      dest: "/home/{{ user }}//lui/{{ lui_path }}/custom/{{ item.dest }}"
+      mode: '0644'
+      owner: "{{ user }}"
+      group: "{{ user }}"
+    become: true
+    when: router
     loop:
      - src:  rules.v4.j2
        dest: rules.v4
@@ -71,12 +96,7 @@
        dest: dnsmasq.dhcp-options.UNDERCLOUD
      - src:  dnsmasq.hosts.UNDERCLOUD.j2  
        dest: dnsmasq.hosts.UNDERCLOUD
-     - src:  sshd_conf.j2
-       dest: sshd_conf
-     - src:  netplan.j2
-       dest: netplan
-     - src:  preseed.cfg.j2
-       dest: preseed.cfg 
+
 
   - name: Copy build-iso.sh to destination
     copy:
@@ -90,14 +110,63 @@
       dest: build-iso.sh
     - src:  custom/boot-menu.patch
       dest: custom/boot-menu.patch
-    - src:  custom/ssh-host-keygen.service
-      dest: custom/ssh-host-keygen.service
+  - name: run build-iso-sh
+    shell: "./{{ lui_path }}/build-iso.sh  /home/{{ user }}/lui.iso"
+    args:
+      chdir: /home/{{ user }}/lui
+    tags: icy  
 
-#  - name: run build-iso-sh
+  - name: hdparm the key
+    shell: hdparm -r0 /dev/sdb1
+    become: true
+    tags: parmy
 
-#  - name: hdparm the key
+  - name: Clean test directory
+    file:
+      path: /home/{{ user }}/iso-cracker
+      state: absent
+    become: true
 
-#  - name: dd the key
+  - name: Make a test directory
+    file:
+      path: /home/{{ user }}/iso-cracker
+      state: directory 
+      mode: '0755'
+      owner: "{{ user }}"
+      group: "{{ user }}"
+
+  - name: umount the USB
+    mount:
+      path: /usb
+      state: unmounted
+    become: true
+
+  - name: dd the key
+    shell: dd bs=4M if=/home/{{ user }}/lui.iso of=/dev/sdb1 conv=fdatasync
+    become: true
+
+  - name: mount the USB
+    shell: mount /dev/sdb1 /usb
+    become: true  
+
+  - shell: cp /usb/initrd.gz /home/{{ user }}/iso-cracker 
+    when: unarchive_iso_for_testing
+
+  - shell: gunzip ~/iso-cracker/initrd.gz
+    when: unarchive_iso_for_testing
+
+  - shell: cpio -i < initrd 
+    args:
+      chdir: /home/{{ user }}/iso-cracker
+    ignore_errors: yes
+    when: unarchive_iso_for_testing
+
+  - name: umount the USB
+    mount:
+      path: /usb
+      state: unmounted
+    become: true
+
 
 #  - name: dd the mbr of sda
 
