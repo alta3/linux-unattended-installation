@@ -43,7 +43,7 @@ outside_interface:
   mask:                "{{ lookup('env','SUMI_02_MASK') }}"
   name:                "{{ lookup('env','SUMI_02_INTERFACE_NAME') }}"
   gw:                  "{{ lookup('env','SUMI_02_GW') }}"
-
+  jmtu:                "{{ lookup('env','JUMBO_MTU_SIZE') }}"
  
 # SSH settings
 #ssh_host: true

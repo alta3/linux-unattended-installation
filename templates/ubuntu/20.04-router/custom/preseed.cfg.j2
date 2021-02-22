@@ -47,7 +47,7 @@ d-i hw-detect/load_firmware boolean true
 d-i netcfg/disable_autoconfig boolean true
 d-i netcfg/get_nameservers string {{ public_dns }}
 d-i netcfg/choose_interface select {{ outside_interface.name }}
-d-i netcfg/get_ipaddress string {{ outside_interface.sams[0].ip }}
+d-i netcfg/get_ipaddress string {{ outside_interface.ip[0] }}
 d-i netcfg/get_netmask string {{ outside_interface.mask }}
 d-i netcfg/get_gateway string {{ outside_interface.gw }}
 d-i netcfg/confirm_static boolean true
@@ -219,7 +219,18 @@ d-i preseed/late_command string \
  in-target sh -c 'iptables-restore < /etc/iptables/rules.v4'; \
  in-target sh -c 'echo "%sudo ALL=(ALL) NOPASSWD: ALL" | sudo EDITOR="tee -a" visudo'; \
  in-target sh -c 'rm -f /etc/ssh/ssh_host_*_key* && mkdir -p /usr/lib/systemd/system && cp /custom/ssh-host-keygen.service /usr/lib/systemd/system/ssh-host-keygen.service &&chmod 0644 /usr/lib/systemd/system/ssh-host-keygen.service && systemctl enable ssh-host-keygen.service'; \
- in-target sh -c 'echo "net.ipv4.ip_forward=1" > /etc/sysctl.conf' ; \
+ in-target sh -c 'echo "net.ipv4.ip_forward=1" > /etc/sysctl.conf'; \
+ in-target sh -c 'systemctl disable --now systemd-resolved'; \
+ in-target sh -c 'rm -rf /etc/resolv.conf'; \
+ in-target sh -c 'echo "nameserver 8.8.8.8" > /etc/resolv.conf'; \
+ in-target sh -c 'apt install dnsmasq -y'; \
+ in-target sh -c 'mkdir -p --mode=0755 /etc/dnsmasq.d/domains/dhcp-options'; \
+ in-target sh -c 'mkdir -p --mode=0755 /etc/dnsmasq.d/domains/dhcp-hosts'; \
+ in-target sh -c 'mkdir -p --mode=0755 /etc/dnsmasq.d/domains/hosts'; \
+ in-target sh -c 'cp /custom/dnsmasq.conf  /etc/dnsmasq.conf'; \
+ in-target sh -c 'cp /custom/dnsmasq.dhcp-options.UNDERCLOUD  /etc/dnsmasq.d/domains/dhcp-options/UNDERCLOUD'; \
+ in-target sh -c 'cp /custom/dnsmasq.dhcp-hosts.UNDERCLOUD    /etc/dnsmasq.d/domains/dhcp-hosts/UNDERCLOUD'; \
+ in-target sh -c 'cp /custom/dnsmasq.hosts.UNDERCLOUD         /etc/dnsmasq.d/domains/hosts/UNDERCLOUD'; \
  in-target sh -c 'echo "Please use SSH Login" >> /etc/issue && echo "IPv4: \\\4{{ lcb }}{{outside_interface.name}}{{rcb}}  \\\4{{ lcb }}{{inside_interface.name}}{{rcb}} " >> /etc/issue && echo "IPv6: \\\6" >> /etc/issue && echo "" >> /etc/issue'; \
  in-target sh -c 'eject || true';
 d-i debian-installer/splash boolean false

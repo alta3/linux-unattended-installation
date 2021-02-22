@@ -1,13 +1,13 @@
 ## ========================== ROUTER =========================
-user:     "{{ lookup('env','ROUTER_USER') }}"
-lui_path: "ubuntu/20.04-router"
-keys:     "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
+user:                 "{{ lookup('env','ROUTER_USER') }}"
+lui_path:             "ubuntu/20.04-router"
+keys:                 "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
 
 # DNSMasq MUST HAVE this information FROM EVERY UNDERCLOUD host to build host and dhcp-host tables
-br_mac:   "{{ lookup('env','ROUTER_DEV_BR_MAC') }}"
-nic_mac:  "{{ lookup('env','ROUTER_DEV_NIC_MAC') }}"
-fqdn:     "{{ lookup('env','ROUTER_DEV_FQDN') }}"
-ip:       "{{ inside_interface.ip }}"
+br_mac:               "{{ lookup('env','ROUTER_DEV_BR_MAC') }}"
+nic_mac:              "{{ lookup('env','ROUTER_DEV_NIC_MAC') }}"
+fqdn:                 "{{ lookup('env','ROUTER_DEV_FQDN') }}"
+ip:                   "{{ inside_interface.ip }}"
 
 #br_mmac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
 #Host configuration
@@ -33,25 +33,24 @@ production:            "{{ lookup('env','PRODUCTION') }}"
 # preseed controls and testing
 unarchive_iso_for_testing: true
 preseed_add_apts:      "{{ lookup('env','ROUTER_PRESEED_APTS') }}" 
-poweroff_when_done:    "{{ lookup('env','ROUTER_PRESEED_POWEROFF') }}"  
+poweroff_when_done:    "{{ lookup('env','ROUTER_PRESEED_POWEROFF') | bool }}"  
 lcb: "{"
 rcb: "}"
 bs: '\'
 
 ## NETPLAN Information
 outside_interface:
-  sams:
-  - ip:  "{{ lookup('env','ROUTER_OUTSIDE_IP') }}"
-  cidr:  "{{ lookup('env','ROUTER_OUTSIDE_CIDR') }}"
-  gw:    "{{ lookup('env','ROUTER_OUTSIDE_GW') }}"
-  mask:  "{{ lookup('env','ROUTER_OUTSIDE_MASK') }}"
-  name:  "{{ lookup('env','ROUTER_OUTSIDE_INTERFACE_NAME') }}"
+  ip:                  "{{ lookup('env','ROUTER_OUTSIDE_IP') | from_json }}"
+  cidr:                "{{ lookup('env','ROUTER_OUTSIDE_CIDR') }}"
+  gw:                  "{{ lookup('env','ROUTER_OUTSIDE_GW') }}"
+  mask:                "{{ lookup('env','ROUTER_OUTSIDE_MASK') }}"
+  name:                "{{ lookup('env','ROUTER_OUTSIDE_INTERFACE_NAME') }}"
 
 inside_interface:
-  ip:    "{{ lookup('env','ROUTER_INSIDE_IP') }}"
-  cidr:  "{{ lookup('env','ROUTER_INSIDE_CIDR') }}"
-  mask:  "{{ lookup('env','ROUTER_INSIDE_MASK') }}"
-  name:  "{{ lookup('env','ROUTER_INSIDE_INTERFACE_NAME') }}"
+  ip:                  "{{ lookup('env','ROUTER_INSIDE_IP') }}"
+  cidr:                "{{ lookup('env','ROUTER_INSIDE_CIDR') }}"
+  mask:                "{{ lookup('env','ROUTER_INSIDE_MASK') }}"
+  name:                "{{ lookup('env','ROUTER_INSIDE_INTERFACE_NAME') }}"
 
 # SSH settings
 sshd_subsystem_string_exists: true
@@ -59,8 +58,8 @@ ssh_host: true
 sshd_subsystem_string: "{{ lookup('env','ROUTER_SSHD_SUBSYSTEM_STRING') }}"
 
 AuthorizedKeysFile:
-- "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
-- "{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
+-                      "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
+-                      "{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
 
 
 # DHCP server information
@@ -78,19 +77,19 @@ dips_dnsmasq_hosts:    "{{ lookup('env','DIPS_DNSMASQ_HOSTS') }}"
 ## Please create a name of the form "PROTOCOL to HOST"
 nat_targets:
 - dport: "{{ lookup('env','NAT_SSH_DPORT') }}"
-  dnat: "{{ lookup('env','NAT_SSH_DNAT') }}"
-  name: "{{ lookup('env','NAT_SSH_NAME') }}"
+  dnat:  "{{ lookup('env','NAT_SSH_DNAT') }}"
+  name:  "{{ lookup('env','NAT_SSH_NAME') }}"
 
 - dport: "{{ lookup('env','NAT_HTTP_DPORT') }}"
-  dnat: "{{ lookup('env','NAT_HTTP_DNAT') }}"
-  name: "{{ lookup('env','NAT_HTTP_NAME') }}"
+  dnat:  "{{ lookup('env','NAT_HTTP_DNAT') }}"
+  name:  "{{ lookup('env','NAT_HTTP_NAME') }}"
 
 - dport: "{{ lookup('env','NAT_HTTPS_DPORT') }}"
-  dnat: "{{ lookup('env','NAT_HTTPS_DNAT') }}"
-  name: "{{ lookup('env','NAT_HTTPS_NAME') }}"
+  dnat:  "{{ lookup('env','NAT_HTTPS_DNAT') }}"
+  name:  "{{ lookup('env','NAT_HTTPS_NAME') }}"
 
 - dport: "{{ lookup('env','NAT_SFTP_DPORT') }}"
-  dnat: "{{ lookup('env','NAT_SFTP_DNAT') }}"
-  name: "{{ lookup('env','NAT_SFTP_NAME') }}"
+  dnat:  "{{ lookup('env','NAT_SFTP_DNAT') }}"
+  name:  "{{ lookup('env','NAT_SFTP_NAME') }}"
 
 

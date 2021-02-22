@@ -1,6 +1,6 @@
 ---
 - name: BOOTSTRAPPING HOSTS
-  hosts: sumi-02
+  hosts: router-dev
   gather_facts: True
   tasks:
 
@@ -40,7 +40,7 @@
     become: true
 
   - debug: 
-      msg: '{{ bs }}4{{ lcb }}{{outside_interface.name}}{{rcb}}' 
+      msg: '{{poweroff_when_done}}' 
     tags: buggy
 
   - name: Set authorized keys from url
@@ -97,7 +97,6 @@
      - src:  dnsmasq.hosts.UNDERCLOUD.j2  
        dest: dnsmasq.hosts.UNDERCLOUD
 
-
   - name: Copy build-iso.sh to destination
     copy:
       src: "templates/{{ lui_path }}/{{ item.src }}" 
@@ -110,22 +109,33 @@
       dest: build-iso.sh
     - src:  custom/boot-menu.patch
       dest: custom/boot-menu.patch
+
   - name: run build-iso-sh
     shell: "./{{ lui_path }}/build-iso.sh  /home/{{ user }}/lui.iso"
     args:
       chdir: /home/{{ user }}/lui
-    tags: icy  
 
   - name: hdparm the key
     shell: hdparm -r0 /dev/sdb1
     become: true
-    tags: parmy
+
+  - name: umount the USB
+    mount:
+      path: /usb
+      state: unmounted
+    become: true
+    when: unarchive_iso_for_testing
+
+  - name: WRITE THE ISO to USB
+    shell: cat lui.iso > /dev/sdb
+    become: true
 
   - name: Clean test directory
     file:
       path: /home/{{ user }}/iso-cracker
       state: absent
     become: true
+    when: unarchive_iso_for_testing
 
   - name: Make a test directory
     file:
@@ -134,20 +144,17 @@
       mode: '0755'
       owner: "{{ user }}"
       group: "{{ user }}"
-
-  - name: umount the USB
-    mount:
-      path: /usb
-      state: unmounted
-    become: true
+    when: unarchive_iso_for_testing  
 
   - name: dd the key
     shell: dd bs=4M if=/home/{{ user }}/lui.iso of=/dev/sdb1 conv=fdatasync
     become: true
-
+    when: unarchive_iso_for_testing
+     
   - name: mount the USB
     shell: mount /dev/sdb1 /usb
     become: true  
+    when: unarchive_iso_for_testing
 
   - shell: cp /usb/initrd.gz /home/{{ user }}/iso-cracker 
     when: unarchive_iso_for_testing
@@ -166,9 +173,10 @@
       path: /usb
       state: unmounted
     become: true
-
+    when: unarchive_iso_for_testing
 
 #  - name: dd the mbr of sda
 
 #  - name: reboot
 
+#  - run finishing tasks  

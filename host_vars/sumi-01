@@ -1,4 +1,56 @@
-br_mac: "{{ lookup('env','SUMI_01_BR_MAC') }}"
-nic_mac: "{{ lookup('env','SUMI_01_NIC_MAC') }}"
-fqdn: "{{ lookup('env','SUMI_01_FQDN') }}"
-ip: "{{ lookup('env','SUMI_01_IP') }}"
+## ========================= SUMI-01  =========================
+
+# DNSMasq MUST HAVE this information FROM EVERY UNDERCLOUD host to build host and dhcp-host tables
+br_mac:                "{{ lookup('env','SUMI_01_BR_MAC') }}"
+nic_mac:               "{{ lookup('env','SUMI_01_NIC_MAC') }}"
+dhcp_option_set:       "{{ lookup('env','SUMI_01_DHCP_OPTION_SET') }}"
+fqdn:                  "{{ lookup('env','SUMI_01_FQDN') }}"
+ip:                    "{{ lookup('env','SUMI_01_IP') }}"
+user:                  "{{ lookup('env','SUMI_01_USER') }}"
+keys:                  "{{ lookup('env','UNDERCLOUD_KEYS' ) | from_json }}"
+
+# Host configuration
+ansible_host:          "{{ lookup('env','SUMI_01_INSIDE_IP') }}"
+hostname:              "{{ lookup('env','HOSTNAME') }}"
+inside_domain:         "{{ lookup('env','INSIDE_DOMAIN') }}"
+config_pass:           "{{ lookup('env','CONFIG_PASS') }}"
+public_dns:            "{{ lookup('env','PUBLIC_DNS') }}"
+public_dns_2:          "{{ lookup('env','PUBLIC_DNS_2') }}"
+boot_disk:             "{{ lookup('env','BOOT_DISK') }}"
+usb_stick:             "{{ lookup('env','USB_STICK') }}"
+key_path:              "{{ lookup('env','KEY_PATH') }}"
+host_desc_one_liner:   "{{ lookup('env','HOST_DESC_ONE_LINER') }}"
+
+# Cloud ID
+development:           "{{ lookup('env','DEVELOPMENT') }}"
+integration:           "{{ lookup('env','INTEGRATION') }}"
+production:            "{{ lookup('env','PRODUCTION') }}"
+
+# preseed controls and testing
+unarchive_iso_for_testing: true
+lui_path:              "ubuntu/20.04-compute"
+preseed_add_apts:      "{{ lookup('env','SUMI_01_PRESEED_APTS') }}" 
+router:                false
+poweroff_when_done: false
+lcb: "{"
+rcb: "}"
+bs: '\'
+
+## NETPLAN Information
+outside_interface:
+  ip:                  "{{ lookup('env','SUMI_01_IP') | from_json }}"
+  cidr:                "{{ lookup('env','SUMI_01_CIDR') }}"
+  mask:                "{{ lookup('env','SUMI_01_MASK') }}"
+  name:                "{{ lookup('env','SUMI_01_INTERFACE_NAME') }}"
+  gw:                  "{{ lookup('env','SUMI_01_GW') }}"
+  jmtu:                "{{ lookup('env','JUMBO_MTU_SIZE') }}"
+ 
+# SSH settings
+#ssh_host: true
+
+AuthorizedKeysFile:
+-                      "{{ lookup('env','AUTHORIZED_KEYS_FILE_1') }}"
+-                      "{{ lookup('env','AUTHORIZED_KEYS_FILE_2') }}"
+
+
+

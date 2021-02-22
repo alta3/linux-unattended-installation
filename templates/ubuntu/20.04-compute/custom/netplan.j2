@@ -2,14 +2,36 @@
 network:
   version: 2
   ethernets:
-    {{ outside_interface.name }}:
-      dhcp4: false
-      optional: true
-      addresses:
+  # unused interfaces set to optional=true to save 120 seconds in boot time
+      eno1:
+          dhcp4: False
+          optional: True
+      eno2:
+          dhcp4: False
+          optional: True
+      ens2f0:
+          dhcp4: False
+          optional: True
+      {{ outside_interface.name }}:
+          dhcp4: false
+          optional: true
+          mtu: {{ outside_interface.jmtu }}
+          match:
+              macaddress: {{ nic_mac }}     
+  bridges:
+      br0:
+          dhcp4: false
+          interfaces:
+          - {{ outside_interface.name }}
+          optional: true
+          mtu: {{ outside_interface.jmtu }}
+          macaddress: {{ br_mac }}
+          gateway4: {{ outside_interface.gw }}
+          addresses:
 {% for ip in outside_interface.ip %}
-      - {{ ip }}/{{  outside_interface.cidr }}
+          - {{ ip }}/{{  outside_interface.cidr }}
 {% endfor %}
-      nameservers:
-        addresses:
-        - {{ public_dns }}
+          nameservers: 
+            addresses:
+            - {{ outside_interface.gw }}
 
