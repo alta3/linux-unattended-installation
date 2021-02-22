@@ -1,30 +1,5 @@
 ### Preseed for Ubuntu 20.04
-# Derived from: https://help.ubuntu.com/lts/installation-guide/example-preseed.txt
-
-### Compatibility
-# Tested with the netboot image:
-# http://archive.ubuntu.com/ubuntu/dists/focal/main/installer-amd64/current/legacy-images/netboot/mini.iso
-
-### Authentication
-# We recommend to use public key authentication and therefore disabled the root
-# password. The build-iso.sh script will do all the hard work for you.
-#
-# In case you still want to use password authentication, you need to set the
-# passwd/root-password-crypted variable. See below for further instructions.
-
-### Usage
-# We recommend to use the build-iso.sh script to build an image with embedded
-# preseed and other required files. In that case the preseed file gets loaded
-# automatically and all additional files are available to the installer.
-#
-# In case you want to use a vanilla ISO image, please use the following boot
-# instructions to load the preseed file (press ESC and enter in boot prompt):
-#
-# install auto=true priority=critical url=https://raw.githubusercontent.com/coreprocess/linux-unattended-installation/master/ubuntu/20.04/custom/preseed.cfg
-#
-# Note: you will need to adjust the "preseed/late_command" variable to match
-#       your environment in case you do not use the build-iso.sh script.
-
+# This file is ansible managed
 
 ### Unattended Installation
 d-i auto-install/enable boolean true
@@ -68,12 +43,6 @@ d-i passwd/root-login boolean true
 d-i passwd/root-password-crypted password $6$ZXBvvcBwlwSioTEP$2bESwDNt9GjCoVbpIe4Fh5kf3KW0S/MZZ2UBykMPJHiaM1hcm2zDJmsuGqS3COlszHIw3ImRM9DlaplVZtnot1
 d-i passwd/make-user boolean false
 
-# The root password is disabled by default. In case you want to use a root
-# password, please generate a password with the following command
-#   printf "please-change-password" | mkpasswd -s -m sha-512
-# and update the passwd/root-password-crypted variable accordingly. Furthermore
-# you need to remove the call to "usermod" below.
-
 ### Clock and time zone setup
 d-i clock-setup/utc boolean true
 d-i time/zone string Etc/UTC
@@ -93,22 +62,6 @@ d-i partman/early_command string \
   debconf-set grub-installer/bootdev "$BOOTDEV"; \
   umount /media;
 #  while /bin/true; do sleep 0.01; rm -f /target/etc/grub.d/30_os-prober; done &
-
-### Partitioning
-#d-i preseed/early_command string umount /media || true
-#d-i partman-auto/method string lvm
-#d-i partman-auto-lvm/guided_size string max
-#d-i partman-lvm/device_remove_lvm boolean true
-#d-i partman-lvm/confirm boolean true
-#d-i partman-lvm/confirm_nooverwrite boolean true
-#d-i partman-auto-lvm/new_vg_name string main
-#d-i partman-md/device_remove_md boolean true
-#d-i partman-md/confirm boolean true
-#d-i partman-partitioning/confirm_write_new_label boolean true
-#d-i partman/choose_partition select finish
-#d-i partman/confirm boolean true
-#d-i partman/confirm_nooverwrite boolean true
-#d-i partman-basicmethods/method_only boolean false
 
 
 # PERMIT OLD STUFF TO BE CLOBBERED
@@ -136,10 +89,6 @@ d-i partman/default_label string gpt
 ### EFI
 #d-i partman-efi/non_efi_system boolean true
 
-### Grub
-#d-i grub-installer/only_debian boolean true
-#d-i grub-installer/with_other_os boolean true
-
 ### Disk layout
 
 d-i partman-auto/expert_recipe string  \
@@ -152,40 +101,6 @@ d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
-
-# Use entire disk
-#d-i partman-auto/expert_recipe string         \
-#  boot-root ::                                \
-#    1 1 1 free                                \
-#      $bios_boot{ }                           \
-#      method{ biosgrub }                      \
-#    .                                         \
-#    256 256 256 fat32                         \
-#      $primary{ }                             \
-#      $iflabel{ gpt }                         \
-#      $reusemethod{ }                         \
-#      method{ efi } format{ }                 \
-#      mountpoint{ /boot/efi }                 \
-#    .                                         \
-#    512 512 512 ext4                          \
-#      $primary{ }                             \
-#      $bootable{ }                            \
-#      method{ format } format{ }              \
-#      use_filesystem{ } filesystem{ ext4 }    \
-#      mountpoint{ /boot }                     \
-#    .                                         \
-#    1024 102400000 1000000000 ext4            \
-#      $lvmok{ }                               \
-#      method{ format } format{ }              \
-#      use_filesystem{ } filesystem{ ext4 }    \
-#      mountpoint{ / }                         \
-#      lv_name{ root }                         \
-#    .                                         \
-#    20000 20000 20000 linux-swap              \
-#      $lvmok{ }                               \
-#      method{ swap } format{ }                \
-#      lv_name{ swap }                         \
-#    .
 
 ### Base system installation
 d-i base-installer/install-recommends boolean true

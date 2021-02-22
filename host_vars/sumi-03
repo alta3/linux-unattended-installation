@@ -31,7 +31,7 @@ unarchive_iso_for_testing: true
 lui_path:              "ubuntu/20.04-compute"
 preseed_add_apts:      "{{ lookup('env','SUMI_03_PRESEED_APTS') }}" 
 router:                false
-poweroff_when_done:    "{{ lookup('env','SUMI_03_PRESEED_POWEROFF') }}"  
+poweroff_when_done:    false  
 lcb: "{"
 rcb: "}"
 bs: '\'
